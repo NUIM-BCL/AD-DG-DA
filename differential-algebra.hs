@@ -8,16 +8,16 @@
 import Prelude.Unicode
 
 -- Differential Algebra domain
-class DA a b c | c→a, c→b, a→b, a→c where
-  bund ∷ a→b→c
-  unbund ∷ c→(a,b)            -- inverse uncurried bund
+class DA a da ba | ba→a, ba→da, a→da, a→ba where
+  bund ∷ a→da→ba
+  unbund ∷ ba→(a,da)            -- inverse uncurried bund
   unbund x = (prim x, tang x)
-  prim ∷ c→a
+  prim ∷ ba→a
   prim = fst ∘ unbund
-  tang ∷ c→b
+  tang ∷ ba→da
   tang = snd ∘ unbund
-  zero ∷ a→b
-  lift ∷ a→c
+  zero ∷ a→da
+  lift ∷ a→ba
   lift x = bund x (zero x)
 
 data Dual a = Dual a a
@@ -39,7 +39,12 @@ instance DA Double Double (Dual Double) where
   unbund (Dual x x') = (x,x')
   zero = const 0
 
-instance (DA a b c, DA aa bb cc) ⇒ DA (a→aa) (b→bb) (c→cc) where
+-- It is unclear what the 2nd arg to DA should be here.  The (da→db) is
+-- just a placeholder.  The "right thing" is probably to get rid of
+-- the 2nd arg of DA, and make another type class for DA-with-tang.
+-- Which happens to be exactly those cases where
+-- (TVB a a' ta, DA a da ba, a'~da, ta~ba)
+instance (DA a da ba, DA b db bb) ⇒ DA (a→b) (da→db) (ba→bb) where
   bund = error "bund not implemented for function type"
   unbund = error "unbund not implemented for function type"
   prim = (prim ∘)∘(∘ lift)
@@ -47,13 +52,13 @@ instance (DA a b c, DA aa bb cc) ⇒ DA (a→aa) (b→bb) (c→cc) where
   zero = error "zero not implemented for function type"
   lift = error "lift not implemented for function type" -- lift = id ?
 
-instance (DA a b c, DA aa bb cc) ⇒ DA (a,aa) (b,bb) (c,cc) where
+instance (DA a da ba, DA b db bb) ⇒ DA (a,b) (da,db) (ba,bb) where
   bund (x,xx) (y,yy) = (bund x y, bund xx yy)
   unbund (x, xx) = ((prim x, prim xx), (tang x, tang xx))
   zero (x,y) = (zero x, zero y)
 
 {-
-instance (DA a b c, Functor f) ⇒ DA (f a) (f b) (f c) where
+instance (DA a da ba, Functor f) ⇒ DA (f a) (f da) (f ba) where
   -- prim = fmap prim
   -- tang = fmap tang
   -- lift = fmap lift
@@ -61,73 +66,101 @@ instance (DA a b c, Functor f) ⇒ DA (f a) (f b) (f c) where
   --   where px = fmap unbund fx
 -}
 
-instance DA a b c ⇒ DA [a] [b] [c] where -- lengths should also be equal
+instance DA a da ba ⇒ DA [a] [da] [ba] where -- lengths should also be equal
   bund = zipWith bund
-  unbund xs = (map prim xs, map tang xs)
+  unbund xs = (fmap prim xs, fmap tang xs)
   zero = fmap zero
 
 -- Tangent vector bundle
-class TVB a b c | c→a, c→b, a→b, a→c where
-  bundle ∷ a→b→c
-  unbundle ∷ c→(a,b)
+class TVB a a' ta | ta→a, ta→a', a→a', a→ta where
+  bundle ∷ a→a'→ta
+  unbundle ∷ ta→(a,a')
   unbundle x = (primal x, tangent x)
-  primal ∷ c→a
+  primal ∷ ta→a
   primal = fst ∘ unbundle
-  tangent ∷ c→b
+  tangent ∷ ta→a'
   tangent = snd ∘ unbundle
-  vzero ∷ a→b
-  vlift ∷ a→c
+  vzero ∷ a→a'
+  vlift ∷ a→ta
   vlift x = bundle x (vzero x)
+
+-- instance Num a ⇒ TVB a a (Dual a) where
+--   bundle = Dual
+--   unbundle (Dual x x') = (x,x')
+--   vzero = const 0
 
 instance TVB Double Double (Dual Double) where
   bundle = Dual
-  primal (Dual x _) = x
-  tangent (Dual _ x') = x'
+  unbundle (Dual x x') = (x,x')
   vzero = const 0
 
 -- Differential Geometric (DG) definition of the tangent vector bundle
 -- of a function type.
-instance TVB aa bb cc ⇒ TVB (a→aa) (a→bb) (a→cc) where
+instance TVB b b' tb ⇒ TVB (a→b) (a→b') (a→tb) where
   bundle f f' x = bundle (f x) (f' x)
   primal f = primal ∘ f
   tangent f = tangent ∘ f
-  vzero = vzero
+  vzero f = vzero ∘ f
 
-instance TVB a b c ⇒ TVB [a] [b] [c] where -- lengths should also be equal
+instance TVB a a' ta ⇒ TVB [a] [a'] [ta] where -- lengths should also be equal
   bundle = zipWith bundle
   primal = fmap primal
   tangent = fmap tangent
   vzero = fmap vzero
   vlift = fmap vlift
 
-class ConvertTVBandDA a a' ta da ba |
-  a→a', a→ta, a→da, a→ba,
-  ta→a, ta→a', ta→da, ta→ba,
-  ba→a, ba→a', ba→da, ba→ta where
+-- Need to define converters DA to/from TVB, in order to implement DG
+-- via DA.
+
+class ConvertTVBandDA a a' ta da ba
+ | a→a', a→ta, a→da, a→ba,
+   ta→a, ta→a', ta→da, ta→ba,
+   ba→a, ba→a', ba→da, ba→ta
+ where
   fromTVBtoDA ∷  (TVB a a' ta, DA a da ba) ⇒ ta→ba
   fromDAtoTVB ∷  (TVB a a' ta, DA a da ba) ⇒ ba→ta
 
-instance ConvertTVBandDA Double Double (Dual Double) Double (Dual Double) where
+instance ConvertTVBandDA Double Double (Dual Double) Double (Dual Double)
+ where
   fromTVBtoDA = id
   fromDAtoTVB = id
 
-{-
+-- instance (Num a, TVB a a (Dual a), DA a a (Dual a))
+--          ⇒ ConvertTVBandDA a a (Dual a) a (Dual a) where
+--   fromTVBtoDA = id
+--   fromDAtoTVB = id
 
-pushforward ∷ (TVB a a' ta, TVB b b' tb --, DA a aa aaa, DA b bb bbb
-              )
+instance (TVB a a' ta,
+          DA a da ba,
+          ConvertTVBandDA a a' ta da ba,
+          TVB b b' tb,
+          DA b db bb,
+          ConvertTVBandDA b b' tb db bb)
+         ⇒
+         ConvertTVBandDA (a→b) (a→b') (a→tb) (da→db) (ba→bb)
+ where
+  fromDAtoTVB f = fromDAtoTVB ∘ f ∘ lift
+  fromTVBtoDA f = fromTVBtoDA ∘ f ∘ prim
+
+pushforward ∷ (TVB a a' ta, DA a da ba,
+               TVB b b' tb, DA b db bb,
+               ConvertTVBandDA a a' ta da ba,
+               ConvertTVBandDA b b' tb db bb)
               ⇒ (a→b)→(ta→tb)
+
+-- This cannot actually work without a "∀" contaminating its signature
+-- for the function argument, so that it can actually be lifted.
+-- Which requires (among other things) RankNTypes.
+
 pushforward f = fromDAtoTVB ∘ lift f ∘ fromTVBtoDA
--- pushforward = error "not yet quacking"
 
-diff ∷ TVB a b c ⇒ (Double → a) → (Double → c)
--- diff f x = pushforward f (bundle x 1)
-diff = error "no"
+diff ∷ (TVB a a' ta,
+        DA a da ba,
+        Num a',
+        ConvertTVBandDA a a' ta da ba,
+        DA b db bb,
+        TVB b b' tb,
+        ConvertTVBandDA b b' tb db bb)
+       ⇒ (a→b)→(a→b')
 
--- Need to define converters from DA to TVB, etc, in order to
--- implement DG via DA.
-
-fromTVBtoDA ∷ (TVB a b c, DA a bb cc) ⇒ c→cc
-fromTVBtoDA = error "no"
-fromDAtoTVB ∷ (TVB a b c, DA a bb cc) ⇒ cc→c
-fromDAtoTVB = error "no"
--}
+diff f x = tangent $ pushforward f $ bundle x 1
