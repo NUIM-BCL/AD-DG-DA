@@ -142,6 +142,21 @@ instance (TVB a a' ta,
   fromDAtoTVB f = fromDAtoTVB ∘ f ∘ lift
   fromTVBtoDA f = fromTVBtoDA ∘ f ∘ prim
 
+instance (TVB a a' ta,
+          DA a da ba,
+          ConvertTVBandDA a a' ta da ba,
+          TVB b b' tb,
+          DA b db bb,
+          ConvertTVBandDA b b' tb db bb)
+         ⇒
+         ConvertTVBandDA (a,b) (a',b') (ta,tb) (da,db) (ba,bb)
+ where
+  fromDAtoTVB (x,y) = (fromDAtoTVB x, fromDAtoTVB y)
+  fromTVBtoDA (x,y) = (fromTVBtoDA x, fromTVBtoDA y)
+
+-- ACTUAL DERIVATIVE-TAKING OPERATORS!
+-- (Well, scaffolding and types.)
+
 pushforward ∷ (TVB a a' ta, DA a da ba,
                TVB b b' tb, DA b db bb,
                ConvertTVBandDA a a' ta da ba,
