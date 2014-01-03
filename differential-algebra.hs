@@ -5,7 +5,13 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
+module Numeric.DifferentialAlgebra
+
+where
+
 import Prelude.Unicode
+import Numeric.Dual hiding (lift)
+-- import qualified Numeric.Dual
 
 -- Differential Algebra domain
 class DA a da ba | ba→a, ba→da, a→da, a→ba where
@@ -20,21 +26,12 @@ class DA a da ba | ba→a, ba→da, a→da, a→ba where
   lift ∷ a→ba
   lift x = bund x (zero x)
 
-data Dual a = Dual a a
-            deriving (Read, Show)
-
-instance Eq a ⇒ Eq (Dual a) where
-  Dual x _ == Dual y _ = x ≡ y -- Can use ≡ on RHS but must use == on LHS.
-
-instance Ord a ⇒ Ord (Dual a) where
-  compare (Dual x _) (Dual y _) = compare x y
-
--- instance Num a ⇒ DA a a (Dual a) where
+-- instance Num a ⇒ DA a a (Dual tag a) where
 --   bund = Dual
 --   unbund (Dual x x') = (x,x')
 --   zero = const 0
 
-instance DA Double Double (Dual Double) where
+instance DA Double Double (Dual tag Double) where
   bund = Dual
   unbund (Dual x x') = (x,x')
   zero = const 0
@@ -84,12 +81,12 @@ class TVB a a' ta | ta→a, ta→a', a→a', a→ta where
   vlift ∷ a→ta
   vlift x = bundle x (vzero x)
 
--- instance Num a ⇒ TVB a a (Dual a) where
+-- instance Num a ⇒ TVB a a (Dual tag a) where
 --   bundle = Dual
 --   unbundle (Dual x x') = (x,x')
 --   vzero = const 0
 
-instance TVB Double Double (Dual Double) where
+instance TVB Double Double (Dual tag Double) where
   bundle = Dual
   unbundle (Dual x x') = (x,x')
   vzero = const 0
@@ -120,13 +117,13 @@ class ConvertTVBandDA a a' ta da ba
   fromTVBtoDA ∷  (TVB a a' ta, DA a da ba) ⇒ ta→ba
   fromDAtoTVB ∷  (TVB a a' ta, DA a da ba) ⇒ ba→ta
 
-instance ConvertTVBandDA Double Double (Dual Double) Double (Dual Double)
+instance ConvertTVBandDA Double Double (Dual tag Double) Double (Dual tag Double)
  where
   fromTVBtoDA = id
   fromDAtoTVB = id
 
--- instance (Num a, TVB a a (Dual a), DA a a (Dual a))
---          ⇒ ConvertTVBandDA a a (Dual a) a (Dual a) where
+-- instance (Num a, TVB a a (Dual tag a), DA a a (Dual tag a))
+--          ⇒ ConvertTVBandDA a a (Dual tag a) a (Dual tag a) where
 --   fromTVBtoDA = id
 --   fromDAtoTVB = id
 
