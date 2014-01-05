@@ -8,10 +8,11 @@ module Diff (ConvertTVBandDA, diff, pushforward)
 where
 
 import Prelude.Unicode
-import DifferentialAlgebra
-import TangentVectorBundle
-import Numeric.Dual hiding (lift)
-import qualified Numeric.Dual as Dual()
+import DifferentialAlgebra (DA)
+import qualified DifferentialAlgebra as DA (lift, primal)
+import TangentVectorBundle (TVB)
+import qualified TangentVectorBundle as TVB (tangent, bundle)
+import Numeric.Dual (Dual)
 
 -- Need to define converters DA to/from TVB, in order to implement DG
 -- via DA.
@@ -43,8 +44,8 @@ instance (TVB a a' ta,
          ⇒
          ConvertTVBandDA (a→b) (a→b') (a→tb) (da→db) (ba→bb)
  where
-  fromDAtoTVB f = fromDAtoTVB ∘ f ∘ lift
-  fromTVBtoDA f = fromTVBtoDA ∘ f ∘ prim
+  fromDAtoTVB f = fromDAtoTVB ∘ f ∘ DA.lift
+  fromTVBtoDA f = fromTVBtoDA ∘ f ∘ DA.primal -- *unsafe* unless tangent is zero
 
 instance (TVB a a' ta,
           DA a da ba,
@@ -71,7 +72,7 @@ pushforward ∷ (TVB a a' ta, DA a da ba,
 -- for the function argument, so that it can actually be lifted.
 -- Which requires (among other things) RankNTypes.
 
-pushforward f = fromDAtoTVB ∘ lift f ∘ fromTVBtoDA
+pushforward f = fromDAtoTVB ∘ DA.lift f ∘ fromTVBtoDA
 
 diff ∷ (TVB a a' ta,
         DA a da ba,
@@ -82,4 +83,4 @@ diff ∷ (TVB a a' ta,
         ConvertTVBandDA b b' tb db bb)
        ⇒ (a→b)→(a→b')
 
-diff f x = tangent $ pushforward f $ bundle x 1
+diff f x = TVB.tangent $ pushforward f $ TVB.bundle x 1
