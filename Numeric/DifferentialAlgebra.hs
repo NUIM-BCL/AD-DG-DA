@@ -5,14 +5,16 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Numeric.DifferentialAlgebra
-
+module Numeric.DifferentialAlgebra (diff, pushforward,
+                                    ConvertTVBandDA, TVB, DA,
+                                    bund, unbund, prim, tang, zero, lift,
+                                    bundle, unbundle, primal, tangent, vzero, vlift)
 where
 
 import Prelude.Unicode
 
 import Numeric.Dual hiding (lift)
--- import qualified Numeric.Dual
+import qualified Numeric.Dual as Dual()
 
 -- | Differential Algebra domain.
 -- The type class (DA t dt bt) means -- that t is the type of primal
