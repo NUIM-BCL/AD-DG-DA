@@ -5,9 +5,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module DifferentialAlgebra (diff, pushforward,
-                            ConvertTVBandDA, TVB, DA,
-                            bund, unbund, prim, tang, zero, lift)
+module DifferentialAlgebra (DA, bund, unbund, prim, tang, zero, lift)
 where
 
 import Prelude.Unicode
