@@ -2,7 +2,7 @@
 
 {- Minimally Fart around with Dual Numbers -}
 
-module Numeric.Dual (Dual, lift, liftA1, liftA1_, liftA2, liftA2_)
+module Numeric.Dual (Dual(Dual), lift, liftA1, liftA1_, liftA2, liftA2_)
 where
 
 import Prelude.Unicode
