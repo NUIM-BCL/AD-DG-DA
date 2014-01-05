@@ -12,7 +12,7 @@ import Numeric.Dual hiding (lift)
 import qualified Numeric.Dual as Dual()
 
 -- Tangent vector bundle
-class TVB a a' ta | ta→a, ta→a', a→a', a→ta where
+class TVB a a' ta | a→ta, ta→a a' where
   bundle ∷ a→a'→ta
   unbundle ∷ ta→(a,a')
   unbundle x = (primal x, tangent x)

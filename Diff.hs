@@ -18,9 +18,9 @@ import Numeric.Dual (Dual)
 -- via DA.
 
 class ConvertTVBandDA a a' ta da ba
- | a→a', a→ta, a→da, a→ba,
-   ta→a, ta→a', ta→da, ta→ba,
-   ba→a, ba→a', ba→da, ba→ta
+ | a→a' ta da ba,
+   ta→a,
+   ba→a
  where
   fromTVBtoDA ∷  (TVB a a' ta, DA a da ba) ⇒ ta→ba
   fromDAtoTVB ∷  (TVB a a' ta, DA a da ba) ⇒ ba→ta
