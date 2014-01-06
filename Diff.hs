@@ -83,4 +83,4 @@ diff ∷ (TVB a a' ta,
         ConvertTVBandDA b b' tb db bb)
        ⇒ (a→b)→(a→b')
 
-diff f x = TVB.tangent $ pushforward f $ TVB.bundle x 1
+diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
