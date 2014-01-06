@@ -22,23 +22,23 @@ class ConvertTVBandDA a a' ta da ba
    ta→a,
    ba→a
  where
-  fromTVBtoDA ∷  (TVB a a' ta, DA tag a da ba) ⇒ ta→ba
-  fromDAtoTVB ∷  (TVB a a' ta, DA tag a da ba) ⇒ ba→ta
+  fromTVBtoDA ∷  (TVB tag a a' ta, DA tag a da ba) ⇒ ta→ba
+  fromDAtoTVB ∷  (TVB tag a a' ta, DA tag a da ba) ⇒ ba→ta
 
 instance ConvertTVBandDA Double Double (Dual tag Double) Double (Dual tag Double)
  where
   fromTVBtoDA = id
   fromDAtoTVB = id
 
--- instance (Num a, TVB a a (Dual tag a), DA tag a a (Dual tag a))
+-- instance (Num a, TVB tag a a (Dual tag a), DA tag a a (Dual tag a))
 --          ⇒ ConvertTVBandDA a a (Dual tag a) a (Dual tag a) where
 --   fromTVBtoDA = id
 --   fromDAtoTVB = id
 
-instance (TVB a a' ta,
+instance (TVB tag a a' ta,
           DA tag a da ba,
           ConvertTVBandDA a a' ta da ba,
-          TVB b b' tb,
+          TVB tag b b' tb,
           DA tag b db bb,
           ConvertTVBandDA b b' tb db bb)
          ⇒
@@ -47,10 +47,10 @@ instance (TVB a a' ta,
   fromDAtoTVB f = fromDAtoTVB ∘ f ∘ DA.lift
   fromTVBtoDA f = fromTVBtoDA ∘ f ∘ DA.primal -- *unsafe* unless tangent is zero
 
-instance (TVB a a' ta,
+instance (TVB tag a a' ta,
           DA tag a da ba,
           ConvertTVBandDA a a' ta da ba,
-          TVB b b' tb,
+          TVB tag b b' tb,
           DA tag b db bb,
           ConvertTVBandDA b b' tb db bb)
          ⇒
@@ -59,7 +59,7 @@ instance (TVB a a' ta,
   fromDAtoTVB (x,y) = (fromDAtoTVB x, fromDAtoTVB y)
   fromTVBtoDA (x,y) = (fromTVBtoDA x, fromTVBtoDA y)
 
-instance (TVB a a' ta,
+instance (TVB tag a a' ta,
           DA tag a da ba,
           ConvertTVBandDA a a' ta da ba)
          ⇒
@@ -68,7 +68,7 @@ instance (TVB a a' ta,
   fromDAtoTVB = fmap fromDAtoTVB
   fromTVBtoDA = fmap fromTVBtoDA
 
-instance (TVB a a' ta,
+instance (TVB tag a a' ta,
           DA tag a da ba,
           ConvertTVBandDA a a' ta da ba)
          ⇒
@@ -77,10 +77,10 @@ instance (TVB a a' ta,
   fromDAtoTVB = fmap fromDAtoTVB
   fromTVBtoDA = fmap fromTVBtoDA
 
-instance (TVB a a' ta,
+instance (TVB tag a a' ta,
           DA tag a da ba,
           ConvertTVBandDA a a' ta da ba,
-          TVB b b' tb,
+          TVB tag b b' tb,
           DA tag b db bb,
           ConvertTVBandDA b b' tb db bb)
          ⇒
@@ -94,8 +94,8 @@ instance (TVB a a' ta,
 -- ACTUAL DERIVATIVE-TAKING OPERATORS!
 -- (Well, scaffolding and types.)
 
-pushforward ∷ (TVB a a' ta, DA tag a da ba,
-               TVB b b' tb, DA tag b db bb,
+pushforward ∷ (TVB tag a a' ta, DA tag a da ba,
+               TVB tag b b' tb, DA tag b db bb,
                ConvertTVBandDA a a' ta da ba,
                ConvertTVBandDA b b' tb db bb)
               ⇒ (a→b)→(ta→tb)
@@ -106,12 +106,12 @@ pushforward ∷ (TVB a a' ta, DA tag a da ba,
 
 pushforward f = fromDAtoTVB ∘ DA.lift f ∘ fromTVBtoDA
 
-diff ∷ (TVB a a' ta,
+diff ∷ (TVB tag a a' ta,
         DA tag a da ba,
         Num a',
         ConvertTVBandDA a a' ta da ba,
         DA tag b db bb,
-        TVB b b' tb,
+        TVB tag b b' tb,
         ConvertTVBandDA b b' tb db bb)
        ⇒ (a→b)→(a→b')
 
