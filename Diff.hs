@@ -17,74 +17,74 @@ import Numeric.Dual (Dual)
 -- Need to define converters DA to/from TVB, in order to implement DG
 -- via DA.
 
-class ConvertTVBandDA a a' ta da ba
- | a→a' ta da ba,
-   ta→a,
-   ba→a
+class ConvertTVBandDA tag a a' ta da ba
+ | tag a→a' ta da ba,
+   ta→tag a,
+   ba→tag a
  where
   fromTVBtoDA ∷  (TVB tag a a' ta, DA tag a da ba) ⇒ ta→ba
   fromDAtoTVB ∷  (TVB tag a a' ta, DA tag a da ba) ⇒ ba→ta
 
-instance ConvertTVBandDA Double Double (Dual tag Double) Double (Dual tag Double)
+instance ConvertTVBandDA tag Double Double (Dual tag Double) Double (Dual tag Double)
  where
   fromTVBtoDA = id
   fromDAtoTVB = id
 
 -- instance (Num a, TVB tag a a (Dual tag a), DA tag a a (Dual tag a))
---          ⇒ ConvertTVBandDA a a (Dual tag a) a (Dual tag a) where
+--          ⇒ ConvertTVBandDA tag a a (Dual tag a) a (Dual tag a) where
 --   fromTVBtoDA = id
 --   fromDAtoTVB = id
 
 instance (TVB tag a a' ta,
           DA tag a da ba,
-          ConvertTVBandDA a a' ta da ba,
+          ConvertTVBandDA tag a a' ta da ba,
           TVB tag b b' tb,
           DA tag b db bb,
-          ConvertTVBandDA b b' tb db bb)
+          ConvertTVBandDA tag b b' tb db bb)
          ⇒
-         ConvertTVBandDA (a→b) (a→b') (a→tb) (da→db) (ba→bb)
+         ConvertTVBandDA tag (a→b) (a→b') (a→tb) (da→db) (ba→bb)
  where
   fromDAtoTVB f = fromDAtoTVB ∘ f ∘ DA.lift
   fromTVBtoDA f = fromTVBtoDA ∘ f ∘ DA.primal -- *unsafe* unless tangent is zero
 
 instance (TVB tag a a' ta,
           DA tag a da ba,
-          ConvertTVBandDA a a' ta da ba,
+          ConvertTVBandDA tag a a' ta da ba,
           TVB tag b b' tb,
           DA tag b db bb,
-          ConvertTVBandDA b b' tb db bb)
+          ConvertTVBandDA tag b b' tb db bb)
          ⇒
-         ConvertTVBandDA (a,b) (a',b') (ta,tb) (da,db) (ba,bb)
+         ConvertTVBandDA tag (a,b) (a',b') (ta,tb) (da,db) (ba,bb)
  where
   fromDAtoTVB (x,y) = (fromDAtoTVB x, fromDAtoTVB y)
   fromTVBtoDA (x,y) = (fromTVBtoDA x, fromTVBtoDA y)
 
 instance (TVB tag a a' ta,
           DA tag a da ba,
-          ConvertTVBandDA a a' ta da ba)
+          ConvertTVBandDA tag a a' ta da ba)
          ⇒
-         ConvertTVBandDA [a] [a'] [ta] [da] [ba]
+         ConvertTVBandDA tag [a] [a'] [ta] [da] [ba]
  where
   fromDAtoTVB = fmap fromDAtoTVB
   fromTVBtoDA = fmap fromTVBtoDA
 
 instance (TVB tag a a' ta,
           DA tag a da ba,
-          ConvertTVBandDA a a' ta da ba)
+          ConvertTVBandDA tag a a' ta da ba)
          ⇒
-         ConvertTVBandDA (Maybe a) (Maybe a') (Maybe ta) (Maybe da) (Maybe ba)
+         ConvertTVBandDA tag (Maybe a) (Maybe a') (Maybe ta) (Maybe da) (Maybe ba)
  where
   fromDAtoTVB = fmap fromDAtoTVB
   fromTVBtoDA = fmap fromTVBtoDA
 
 instance (TVB tag a a' ta,
           DA tag a da ba,
-          ConvertTVBandDA a a' ta da ba,
+          ConvertTVBandDA tag a a' ta da ba,
           TVB tag b b' tb,
           DA tag b db bb,
-          ConvertTVBandDA b b' tb db bb)
+          ConvertTVBandDA tag b b' tb db bb)
          ⇒
-         ConvertTVBandDA (Either a b) (Either a' b') (Either ta tb) (Either da db) (Either ba bb)
+         ConvertTVBandDA tag (Either a b) (Either a' b') (Either ta tb) (Either da db) (Either ba bb)
  where
   fromDAtoTVB (Left  da) = Left  (fromDAtoTVB da)
   fromDAtoTVB (Right db) = Right (fromDAtoTVB db)
@@ -96,8 +96,8 @@ instance (TVB tag a a' ta,
 
 pushforward ∷ (TVB tag a a' ta, DA tag a da ba,
                TVB tag b b' tb, DA tag b db bb,
-               ConvertTVBandDA a a' ta da ba,
-               ConvertTVBandDA b b' tb db bb)
+               ConvertTVBandDA tag a a' ta da ba,
+               ConvertTVBandDA tag b b' tb db bb)
               ⇒ (a→b)→(ta→tb)
 
 -- This cannot actually work without a "∀" contaminating its signature
@@ -109,10 +109,10 @@ pushforward f = fromDAtoTVB ∘ DA.lift f ∘ fromTVBtoDA
 diff ∷ (TVB tag a a' ta,
         DA tag a da ba,
         Num a',
-        ConvertTVBandDA a a' ta da ba,
+        ConvertTVBandDA tag a a' ta da ba,
         DA tag b db bb,
         TVB tag b b' tb,
-        ConvertTVBandDA b b' tb db bb)
+        ConvertTVBandDA tag b b' tb db bb)
        ⇒ (a→b)→(a→b')
 
 diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
