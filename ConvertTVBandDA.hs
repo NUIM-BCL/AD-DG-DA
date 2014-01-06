@@ -22,17 +22,17 @@ class ConvertTVBandDA tag a a' ta da ba
    ta→tag a,
    ba→tag a
  where
-  toDA ∷  (TVB tag a a' ta, DA tag a da ba) ⇒ ta→ba
-  toTVB ∷  (TVB tag a a' ta, DA tag a da ba) ⇒ ba→ta
+   toDA  ∷ (TVB tag a a' ta, DA tag a da ba) ⇒ ta→ba
+   toTVB ∷ (TVB tag a a' ta, DA tag a da ba) ⇒ ba→ta
 
 instance ConvertTVBandDA tag Double Double (Dual tag Double) Double (Dual tag Double)
  where
-  toDA = id
-  toTVB = id
+   toDA  = id
+   toTVB = id
 
 -- instance (Num a, TVB tag a a (Dual tag a), DA tag a a (Dual tag a))
 --          ⇒ ConvertTVBandDA tag a a (Dual tag a) a (Dual tag a) where
---   toDA = id
+--   toDA  = id
 --   toTVB = id
 
 instance (TVB tag a a' ta,
@@ -45,7 +45,7 @@ instance (TVB tag a a' ta,
          ConvertTVBandDA tag (a→b) (a→b') (a→tb) (da→db) (ba→bb)
  where
   toTVB f = toTVB ∘ f ∘ DA.lift
-  toDA f = toDA ∘ f ∘ DA.primal -- *unsafe* unless tangent is zero
+  toDA  f = toDA  ∘ f ∘ DA.primal -- *unsafe* unless DA tangent is zero
 
 instance (TVB tag a a' ta,
           DA tag a da ba,
