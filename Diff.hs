@@ -59,6 +59,38 @@ instance (TVB a a' ta,
   fromDAtoTVB (x,y) = (fromDAtoTVB x, fromDAtoTVB y)
   fromTVBtoDA (x,y) = (fromTVBtoDA x, fromTVBtoDA y)
 
+instance (TVB a a' ta,
+          DA a da ba,
+          ConvertTVBandDA a a' ta da ba)
+         ⇒
+         ConvertTVBandDA [a] [a'] [ta] [da] [ba]
+ where
+  fromDAtoTVB = fmap fromDAtoTVB
+  fromTVBtoDA = fmap fromTVBtoDA
+
+instance (TVB a a' ta,
+          DA a da ba,
+          ConvertTVBandDA a a' ta da ba)
+         ⇒
+         ConvertTVBandDA (Maybe a) (Maybe a') (Maybe ta) (Maybe da) (Maybe ba)
+ where
+  fromDAtoTVB = fmap fromDAtoTVB
+  fromTVBtoDA = fmap fromTVBtoDA
+
+instance (TVB a a' ta,
+          DA a da ba,
+          ConvertTVBandDA a a' ta da ba,
+          TVB b b' tb,
+          DA b db bb,
+          ConvertTVBandDA b b' tb db bb)
+         ⇒
+         ConvertTVBandDA (Either a b) (Either a' b') (Either ta tb) (Either da db) (Either ba bb)
+ where
+  fromDAtoTVB (Left  da) = Left  (fromDAtoTVB da)
+  fromDAtoTVB (Right db) = Right (fromDAtoTVB db)
+  fromTVBtoDA (Left  ta) = Left  (fromTVBtoDA ta)
+  fromTVBtoDA (Right tb) = Right (fromTVBtoDA tb)
+
 -- ACTUAL DERIVATIVE-TAKING OPERATORS!
 -- (Well, scaffolding and types.)
 
