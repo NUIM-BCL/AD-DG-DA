@@ -49,13 +49,12 @@ instance DA tag Double Double (Dual tag Double) where
 -- just a placeholder.  The "right thing" is probably to get rid of
 -- the 2nd arg of DA, and make another type class for DA-with-tangent.
 -- Which happens to be exactly those cases where
--- (TVB a a' ta, DA a da ba, a'~da, ta~ba)
+-- (TVB tag a a' ta,  DA tag a da ba,  a'~da,  ta~ba)
 instance (DA tag a da ba, DA tag b db bb) ⇒ DA tag (a→b) (ba→db) (ba→bb) where
-  bundle = error "bund not implemented for function type"
-  unbundle = error "unbundle not implemented for function type"
+  bundle f df bx = bundle (f (primal bx)) (df bx) -- WARNING, INEFFICIENT!
   primal = (primal ∘)∘(∘ lift)
-  tangent = error "tangent not implemented for function type"
-  zero = error "zero not implemented for function type"
+  tangent = (tangent ∘)
+  zero f = zero ∘ f ∘ primal    -- Dubious
   lift = error "lift not implemented for function type" -- lift = id ?
 
 instance (DA tag a da ba, DA tag b db bb) ⇒ DA tag (a,b) (da,db) (ba,bb) where
