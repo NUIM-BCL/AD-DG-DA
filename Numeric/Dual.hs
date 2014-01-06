@@ -2,7 +2,8 @@
 
 {- Minimally Fart around with Dual Numbers -}
 
-module Numeric.Dual (Dual(Dual), lift, liftA1, liftA1_, liftA2, liftA2_)
+module Numeric.Dual (Dual, lift, bundle, unbundle, primal, tangent,
+                     liftA1, liftA1_, liftA2, liftA2_)
 where
 
 import Prelude.Unicode
@@ -15,7 +16,19 @@ import Prelude.Unicode
 -- differeniation (Wengert, 1964).  The "tag" allows branding, to
 -- avoid perturbation confusion (Siskind and Pearlmutter, 2008).
 data Dual tag a = Dual a a
-            deriving (Read, Show)
+                deriving (Read, Show)
+
+bundle ∷ a→a→Dual tag a
+bundle = Dual
+
+unbundle ∷ Dual tag a→(a,a)
+unbundle (Dual x x') = (x,x')
+
+primal ∷ Dual tag a→a
+primal (Dual x _) = x
+
+tangent ∷ Dual tag a→a
+tangent (Dual _ x') = x'
 
 lift ∷ Num a ⇒ a → Dual tag a
 lift = flip Dual 0

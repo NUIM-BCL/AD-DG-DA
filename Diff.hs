@@ -4,7 +4,7 @@
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
-module Diff (ConvertTVBandDA, diff, pushforward)
+module Diff (ConvertTVBandDA, diff, pushforward, pushforward_)
 where
 
 import Prelude.Unicode
@@ -105,6 +105,12 @@ pushforward ∷ (TVB tag a a' ta, DA tag a da ba,
 -- Which requires (among other things) RankNTypes.
 
 pushforward f = fromDAtoTVB ∘ DA.lift f ∘ fromTVBtoDA
+
+pushforward_ ∷ (TVB tag a a' ta,
+                TVB tag b b' tb)
+               ⇒ (a→b)→(ta→tb)
+
+pushforward_ = (⊥)
 
 diff ∷ (TVB tag a a' ta,
         DA tag a da ba,

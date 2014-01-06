@@ -8,8 +8,8 @@ module TangentVectorBundle (TVB, bundle, unbundle, primal, tangent, zero, lift)
 where
 
 import Prelude.Unicode
-import Numeric.Dual hiding (lift)
-import qualified Numeric.Dual as Dual()
+import Numeric.Dual (Dual)
+import qualified Numeric.Dual as Dual (lift, bundle, unbundle, primal, tangent)
 
 -- Tangent vector bundle
 class TVB tag a a' ta | tag a→ta, ta→tag a a', a'→tag where -- a'→tag is suspect
@@ -25,14 +25,20 @@ class TVB tag a a' ta | tag a→ta, ta→tag a a', a'→tag where -- a'→tag is
   lift x = bundle x (zero x)
 
 -- instance Num a ⇒ TVB tag a a (Dual tag a) where
---   bundle = Dual
---   unbundle (Dual x x') = (x,x')
---   zero = const 0
+--   bundle	= Dual.bundle
+--   unbundle	= Dual.unbundle
+--   primal	= Dual.primal
+--   tangent	= Dual.tangent
+--   lift		= Dual.lift
+--   zero		= const 0
 
 instance TVB tag Double Double (Dual tag Double) where
-  bundle = Dual
-  unbundle (Dual x x') = (x,x')
-  zero = const 0
+  bundle	= Dual.bundle
+  unbundle	= Dual.unbundle
+  primal	= Dual.primal
+  tangent	= Dual.tangent
+  lift		= Dual.lift
+  zero		= const 0
 
 -- Differential Geometric (DG) definition of the tangent vector bundle
 -- of a function type.

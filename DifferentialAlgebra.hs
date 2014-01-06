@@ -10,8 +10,8 @@ where
 
 import Prelude.Unicode
 
-import Numeric.Dual hiding (lift)
-import qualified Numeric.Dual as Dual()
+import Numeric.Dual (Dual)
+import qualified Numeric.Dual as Dual (lift, bundle, unbundle, primal, tangent)
 
 -- | Differential Algebra domain.
 -- The type class (DA tag t dt bt) means -- that t is the type of primal
@@ -30,14 +30,20 @@ class DA tag a da ba | tag a→ba, ba→tag a da, da→tag where -- the da→tag
   lift x = bundle x (zero x)
 
 -- instance Num a ⇒ DA tag a a (Dual tag a) where
---   bund = Dual
---   unbundle (Dual x x') = (x,x')
---   zero = const 0
+--   bundle	= Dual.bundle
+--   unbundle	= Dual.unbundle
+--   primal	= Dual.primal
+--   tangent	= Dual.tangent
+--   lift		= Dual.lift
+--   zero		= const 0
 
 instance DA tag Double Double (Dual tag Double) where
-  bundle = Dual
-  unbundle (Dual x x') = (x,x')
-  zero = const 0
+  bundle	= Dual.bundle
+  unbundle	= Dual.unbundle
+  primal	= Dual.primal
+  tangent	= Dual.tangent
+  lift		= Dual.lift
+  zero		= const 0
 
 -- It is unclear what the 2nd arg to DA should be here.  The (ba→db) is
 -- just a placeholder.  The "right thing" is probably to get rid of
