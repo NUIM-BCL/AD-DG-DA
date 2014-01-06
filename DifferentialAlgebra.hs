@@ -14,10 +14,10 @@ import Numeric.Dual hiding (lift)
 import qualified Numeric.Dual as Dual()
 
 -- | Differential Algebra domain.
--- The type class (DA t dt bt) means -- that t is the type of primal
+-- The type class (DA tag t dt bt) means -- that t is the type of primal
 -- values, dt is the type of the "tangents", and bt is the bundle type
--- holding both t and dt.
-class DA a da ba | a→ba, ba→a da where
+-- holding both t and dt.  Branded by tag, an existential type.
+class DA tag a da ba | tag a→ba, ba→tag a da, da→tag where -- the da→tag seems suspect
   bundle ∷ a→da→ba
   unbundle ∷ ba→(a,da)            -- inverse uncurried bundle
   unbundle x = (primal x, tangent x)
@@ -29,12 +29,12 @@ class DA a da ba | a→ba, ba→a da where
   lift ∷ a→ba
   lift x = bundle x (zero x)
 
--- instance Num a ⇒ DA a a (Dual tag a) where
+-- instance Num a ⇒ DA tag a a (Dual tag a) where
 --   bund = Dual
 --   unbundle (Dual x x') = (x,x')
 --   zero = const 0
 
-instance DA Double Double (Dual tag Double) where
+instance DA tag Double Double (Dual tag Double) where
   bundle = Dual
   unbundle (Dual x x') = (x,x')
   zero = const 0
@@ -44,7 +44,7 @@ instance DA Double Double (Dual tag Double) where
 -- the 2nd arg of DA, and make another type class for DA-with-tangent.
 -- Which happens to be exactly those cases where
 -- (TVB a a' ta, DA a da ba, a'~da, ta~ba)
-instance (DA a da ba, DA b db bb) ⇒ DA (a→b) (ba→db) (ba→bb) where
+instance (DA tag a da ba, DA tag b db bb) ⇒ DA tag (a→b) (ba→db) (ba→bb) where
   bundle = error "bund not implemented for function type"
   unbundle = error "unbundle not implemented for function type"
   primal = (primal ∘)∘(∘ lift)
@@ -52,27 +52,27 @@ instance (DA a da ba, DA b db bb) ⇒ DA (a→b) (ba→db) (ba→bb) where
   zero = error "zero not implemented for function type"
   lift = error "lift not implemented for function type" -- lift = id ?
 
-instance (DA a da ba, DA b db bb) ⇒ DA (a,b) (da,db) (ba,bb) where
+instance (DA tag a da ba, DA tag b db bb) ⇒ DA tag (a,b) (da,db) (ba,bb) where
   bundle (x,xx) (y,yy) = (bundle x y, bundle xx yy)
   unbundle (x, xx) = ((primal x, primal xx), (tangent x, tangent xx))
   zero (x,y) = (zero x, zero y)
 
 {-
-instance (DA a da ba, Functor f) ⇒ DA (f a) (f da) (f ba) where
+instance (DA tag a da ba, Functor f) ⇒ DA tag (f a) (f da) (f ba) where
   -- primal = fmap primal
   -- tangent = fmap tangent
   -- lift = fmap lift
   -- unbundle fx = (fmap fst px, fmap snd px) where px = fmap unbundle fx
 -}
 
-instance DA a da ba ⇒ DA [a] [da] [ba] where -- lengths should also be equal
+instance DA tag a da ba ⇒ DA tag [a] [da] [ba] where -- lengths should also be equal
   bundle = zipWith bundle
   unbundle bxs = (fmap fst us, fmap snd us) where us = fmap unbundle bxs
   primal = fmap primal
   tangent = fmap tangent
   zero = fmap zero
 
-instance DA a da ba ⇒ DA (Maybe a) (Maybe da) (Maybe ba) where
+instance DA tag a da ba ⇒ DA tag (Maybe a) (Maybe da) (Maybe ba) where
   bundle (Just x) (Just dx) = Just (bundle x dx)
   bundle Nothing Nothing = Nothing
   bundle _ _ = error "nonconformant bundle"
@@ -83,7 +83,7 @@ instance DA a da ba ⇒ DA (Maybe a) (Maybe da) (Maybe ba) where
   zero = fmap zero
   lift = fmap lift
 
-instance (DA a da ba, DA b db bb) ⇒ DA (Either a b) (Either da db) (Either ba bb) where
+instance (DA tag a da ba, DA tag b db bb) ⇒ DA tag (Either a b) (Either da db) (Either ba bb) where
   bundle (Left x) (Left dx) = Left (bundle x dx)
   bundle (Right x) (Right dx) = Right (bundle x dx)
   bundle _ _ = error "nonconformant bundle"
