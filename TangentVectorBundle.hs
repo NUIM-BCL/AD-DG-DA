@@ -60,6 +60,16 @@ instance TVB tag a a' ta ⇒ TVB tag (Maybe a) (Maybe a') (Maybe ta) where
   zero = fmap zero
   lift = fmap lift
 
+instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (a,b) (a',b') (ta,tb) where
+  bundle (x,y) (x',y') = (bundle x x', bundle y y')
+  unbundle (tx,ty) = ((x,y),(x',y')) where
+    (x,x') = unbundle tx
+    (y,y') = unbundle ty
+  primal (tx,ty) = (primal tx, primal ty)
+  tangent (tx,ty) = (tangent tx, tangent ty)
+  zero (x,y) = (zero x, zero y)
+  lift (x,y) = (lift x, lift y)
+
 instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (Either a b) (Either a' b') (Either ta tb) where
   bundle (Left x) (Left dx) = Left (bundle x dx)
   bundle (Right x) (Right dx) = Right (bundle x dx)
