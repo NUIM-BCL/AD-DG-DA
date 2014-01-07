@@ -42,7 +42,7 @@ instance (TVB tag a a' ta,
           DA tag b db bb,
           ConvertTVBandDA tag b b' tb db bb)
          ⇒
-         ConvertTVBandDA tag (a→b) (a→b') (a→tb) (da→db) (ba→bb)
+         ConvertTVBandDA tag (a→b) (a→b') (a→tb) (ba→db) (ba→bb)
  where
   toTVB f = toTVB ∘ f ∘ DA.lift
   toDA  f = toDA  ∘ f ∘ DA.primal -- *unsafe* unless DA tangent is zero
