@@ -1,6 +1,6 @@
 {-# LANGUAGE UnicodeSyntax #-}
 
-{- Minimally Fart around with Dual Numbers -}
+{- Minimal and simplistic implementation of dual numbers -}
 
 module Numeric.Dual (Dual, lift, bundle, unbundle, primal, tangent,
                      liftA1, liftA1_, liftA2, liftA2_)
@@ -9,11 +9,11 @@ where
 import Prelude.Unicode
 
 -- | The 'Dual' type is a concrete representation of a Dual number,
--- meaning a number augmented with a derivatives (Clifford, 1873).
+-- meaning a number augmented with a derivative (Clifford, 1873).
 -- These can be regarded as truncated power series.  The intended use
 -- is for overloading arithmetic in order perform a nonstandard
 -- interpretation of numeric code, for doing forward-mode automatic
--- differeniation (Wengert, 1964).  The "tag" allows branding, to
+-- differentiation (Wengert, 1964).  The "tag" allows branding, to
 -- avoid perturbation confusion (Siskind and Pearlmutter, 2008).
 data Dual tag a = Dual a a
                 deriving (Read, Show)
@@ -70,6 +70,9 @@ instance Fractional a ⇒ Fractional (Dual tag a) where
   recip = liftA1_ recip (\z _ → - z^(2∷Int))
   fromRational	= lift ∘ fromRational
 
+sqr ∷ Num a ⇒ a → a
+sqr = (^(2∷Int))
+
 instance (Eq a, Floating a) => Floating (Dual tag a) where
   pi		= lift pi
   exp		= liftA1_ exp const
@@ -83,18 +86,18 @@ instance (Eq a, Floating a) => Floating (Dual tag a) where
   -- then we deal with all other constant exponents.
   (**) _ (Dual 0 0) = 1
   (**) (Dual x0 0) (Dual y0 0) = lift (x0**y0)
-  (**) (Dual x0 x') (Dual y0 0) = Dual (x0**y0) (x' ⋅ y0*x0**(y0-1))
+  (**) x (Dual y0 0) = liftA1 (**y0) ((y0*) ∘ (**(y0-1))) x
   (**) x@(Dual 0 _) y = liftA2 (**) (\x0 y0 -> (y0*x0**(y0-1), 0)) x y
   (**) x@(Dual _ 0) y = liftA2_ (**) (\z x0 _ -> (0, z*log x0)) x y
   (**) x y	= liftA2_ (**) (\z x0 y0 -> (y0*z/x0, z*log x0)) x y
   sin		= liftA1 sin cos
   cos		= liftA1 cos (negate ∘ sin)
-  tan		= liftA1 tan (recip ∘ (^(2∷Int)) ∘ cos)
-  asin		= liftA1 asin (recip ∘ sqrt ∘ (1-) ∘ (^(2∷Int)))
-  acos		= liftA1 acos (negate ∘ recip ∘ sqrt ∘ (1-) ∘ (^(2∷Int)))
-  atan		= liftA1 atan (recip ∘ (1+) ∘ (^(2∷Int)))
+  tan		= liftA1 tan (recip ∘ sqr ∘ cos)
+  asin		= liftA1 asin (recip ∘ sqrt ∘ (1-) ∘ sqr)
+  acos		= liftA1 acos (negate ∘ recip ∘ sqrt ∘ (1-) ∘ sqr)
+  atan		= liftA1 atan (recip ∘ (1+) ∘ sqr)
   sinh		= liftA1 sinh cosh
   cosh		= liftA1 cosh sinh
-  asinh		= liftA1 asinh (recip ∘ sqrt ∘ (1+) ∘ (^(2∷Int)))
-  acosh		= liftA1 acosh (recip ∘ sqrt ∘ (-1+) ∘ (^(2∷Int)))
-  atanh		= liftA1 atanh (recip ∘ (1-) ∘ (^(2∷Int)))
+  asinh		= liftA1 asinh (recip ∘ sqrt ∘ (1+) ∘ sqr)
+  acosh		= liftA1 acosh (recip ∘ sqrt ∘ (-1+) ∘ sqr)
+  atanh		= liftA1 atanh (recip ∘ (1-) ∘ sqr)
