@@ -8,11 +8,13 @@ module ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
 where
 
 import Prelude.Unicode
+
 import DifferentialAlgebra (DA)
 import qualified DifferentialAlgebra as DA (lift, primal)
 import TangentVectorBundle (TVB)
 import Numeric.Dual (Dual)
 
+-- type ℝ = Double
 
 -- Need to define converters DA to/from TVB, in order to implement DG
 -- via DA.
