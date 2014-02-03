@@ -80,7 +80,7 @@ instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (a,b) (a',b') (ta,tb) wh
 instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (Either a b) (Either a' b') (Either ta tb) where
   bundle (Left x) (Left dx) = Left (bundle x dx)
   bundle (Right x) (Right dx) = Right (bundle x dx)
-  bundle _ _ = error "nonconformant bund"
+  bundle _ _ = error "nonconformant bundle"
   unbundle (Left bx) = (Left p, Left t) where (p,t) = unbundle bx
   unbundle (Right bx) = (Right p, Right t) where (p,t) = unbundle bx
   primal = either (Left ∘ primal) (Right ∘ primal)
