@@ -8,6 +8,7 @@ module TangentVectorBundle (TVB, bundle, unbundle, primal, tangent, zero, lift)
 where
 
 import Prelude.Unicode
+
 import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (lift, bundle, unbundle, primal, tangent)
 
