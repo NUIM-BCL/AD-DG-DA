@@ -25,6 +25,7 @@ pushforward ∷ (TVB tag a a' ta, DA tag a da ba,
 
 pushforward f = toTVB ∘ DA.lift f ∘ toDA
 
+-- One day ⅅ or ⅆ.
 diff ∷ (TVB tag a a' ta,
         DA tag a da ba,
         Num a',
@@ -35,3 +36,8 @@ diff ∷ (TVB tag a a' ta,
        ⇒ (a→b)→(a→b')
 
 diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
+
+-- This won't work
+--  ∫ dx f a b = dx ⋅ sum [f x | x←[a,a+dx..b]]
+-- because ∫ is infix, and also because
+--  all (<=1) [0,0.26..1] ≡ False
