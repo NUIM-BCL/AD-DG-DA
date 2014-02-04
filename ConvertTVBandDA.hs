@@ -27,15 +27,10 @@ class (TVB a a' ta, DA a da ba) ⇒ ConvertTVBandDA a a' ta da ba
    toDA  ∷ ta → ba
    toTVB ∷ ba → ta
 
-instance ConvertTVBandDA Double Double (Dual Double) Double (Dual Double)
+instance (Num a, DA a a (Dual a), TVB a a (Dual a)) ⇒ ConvertTVBandDA a a (Dual a) a (Dual a)
  where
-   toDA  = id
-   toTVB = id
-
--- instance Num a ⇒ ConvertTVBandDA a a (Dual a) a (Dual a)
---  where
---   toDA  = id
---   toTVB = id
+  toDA  = id
+  toTVB = id
 
 instance (ConvertTVBandDA a a' ta da ba,
           ConvertTVBandDA b b' tb db bb)
