@@ -1,7 +1,6 @@
 {-# LANGUAGE UnicodeSyntax #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
