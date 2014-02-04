@@ -13,7 +13,7 @@ import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (lift, bundle, unbundle, primal, tangent)
 
 -- Tangent vector bundle
-class TVB tag a a' ta | tag a→ta, ta→tag a a', a'→tag where -- a'→tag is suspect
+class TVB a a' ta | a→ta, ta→a a' where
   bundle ∷ a→a'→ta
   unbundle ∷ ta→(a,a')
   unbundle x = (primal x, tangent x)
@@ -25,7 +25,7 @@ class TVB tag a a' ta | tag a→ta, ta→tag a a', a'→tag where -- a'→tag is
   lift ∷ a→ta
   lift x = bundle x (zero x)
 
--- instance Num a ⇒ TVB tag a a (Dual tag a) where
+-- instance Num a ⇒ TVB a a (Dual a) where
 --   bundle	= Dual.bundle
 --   unbundle	= Dual.unbundle
 --   primal	= Dual.primal
@@ -33,7 +33,7 @@ class TVB tag a a' ta | tag a→ta, ta→tag a a', a'→tag where -- a'→tag is
 --   lift		= Dual.lift
 --   zero		= const 0
 
-instance TVB tag Double Double (Dual tag Double) where
+instance TVB Double Double (Dual Double) where
   bundle	= Dual.bundle
   unbundle	= Dual.unbundle
   primal	= Dual.primal
@@ -43,20 +43,20 @@ instance TVB tag Double Double (Dual tag Double) where
 
 -- Differential Geometric (DG) definition of the tangent vector bundle
 -- of a function type.
-instance TVB tag b b' tb ⇒ TVB tag (a→b) (a→b') (a→tb) where
+instance TVB b b' tb ⇒ TVB (a→b) (a→b') (a→tb) where
   bundle f f' x = bundle (f x) (f' x)
   primal f = primal ∘ f
   tangent f = tangent ∘ f
   zero f = zero ∘ f
 
-instance TVB tag a a' ta ⇒ TVB tag [a] [a'] [ta] where -- lengths should also be equal
+instance TVB a a' ta ⇒ TVB [a] [a'] [ta] where -- lengths should also be equal
   bundle = zipWith bundle
   primal = fmap primal
   tangent = fmap tangent
   zero = fmap zero
   lift = fmap lift
 
-instance TVB tag a a' ta ⇒ TVB tag (Maybe a) (Maybe a') (Maybe ta) where
+instance TVB a a' ta ⇒ TVB (Maybe a) (Maybe a') (Maybe ta) where
   bundle (Just x) (Just dx) = Just (bundle x dx)
   bundle Nothing Nothing = Nothing
   bundle _ _ = error "nonconformant bundle"
@@ -67,7 +67,7 @@ instance TVB tag a a' ta ⇒ TVB tag (Maybe a) (Maybe a') (Maybe ta) where
   zero = fmap zero
   lift = fmap lift
 
-instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (a,b) (a',b') (ta,tb) where
+instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (a,b) (a',b') (ta,tb) where
   bundle (x,y) (x',y') = (bundle x x', bundle y y')
   unbundle (tx,ty) = ((x,y),(x',y')) where
     (x,x') = unbundle tx
@@ -77,7 +77,7 @@ instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (a,b) (a',b') (ta,tb) wh
   zero (x,y) = (zero x, zero y)
   lift (x,y) = (lift x, lift y)
 
-instance (TVB tag a a' ta, TVB tag b b' tb) ⇒ TVB tag (Either a b) (Either a' b') (Either ta tb) where
+instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (Either a b) (Either a' b') (Either ta tb) where
   bundle (Left x) (Left dx) = Left (bundle x dx)
   bundle (Right x) (Right dx) = Right (bundle x dx)
   bundle _ _ = error "nonconformant bundle"

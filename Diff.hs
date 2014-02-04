@@ -13,10 +13,10 @@ import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
 -- ACTUAL DERIVATIVE-TAKING OPERATORS!
 -- (Well, scaffolding and types.)
 
-pushforward ∷ (TVB tag a a' ta, DA tag a da ba,
-               TVB tag b b' tb, DA tag b db bb,
-               ConvertTVBandDA tag a a' ta da ba,
-               ConvertTVBandDA tag b b' tb db bb)
+pushforward ∷ (TVB a a' ta, DA a da ba,
+               TVB b b' tb, DA b db bb,
+               ConvertTVBandDA a a' ta da ba,
+               ConvertTVBandDA b b' tb db bb)
               ⇒ (a→b)→(ta→tb)
 
 -- This cannot actually work without a "∀" contaminating its signature
@@ -26,13 +26,13 @@ pushforward ∷ (TVB tag a a' ta, DA tag a da ba,
 pushforward f = toTVB ∘ DA.lift f ∘ toDA
 
 -- One day ⅅ or ⅆ.
-diff ∷ (TVB tag a a' ta,
-        DA tag a da ba,
+diff ∷ (TVB a a' ta,
+        DA a da ba,
         Num a',
-        ConvertTVBandDA tag a a' ta da ba,
-        DA tag b db bb,
-        TVB tag b b' tb,
-        ConvertTVBandDA tag b b' tb db bb)
+        ConvertTVBandDA a a' ta da ba,
+        DA b db bb,
+        TVB b b' tb,
+        ConvertTVBandDA b b' tb db bb)
        ⇒ (a→b)→(a→b')
 
 diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1

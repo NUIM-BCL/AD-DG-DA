@@ -13,52 +13,53 @@ import Prelude.Unicode
 -- These can be regarded as truncated power series.  The intended use
 -- is for overloading arithmetic in order perform a nonstandard
 -- interpretation of numeric code, for doing forward-mode automatic
--- differentiation (Wengert, 1964).  The "tag" allows branding, to
--- avoid perturbation confusion (Siskind and Pearlmutter, 2008).
-data Dual tag a = Dual a a
+-- differentiation (Wengert, 1964).
+-- These are untagged, so perturbation confusion (Siskind and
+-- Pearlmutter, 2008) must be avoided by users.
+data Dual a = Dual a a
                 deriving (Read, Show)
 
-bundle ∷ a→a→Dual tag a
+bundle ∷ a→a→Dual a
 bundle = Dual
 
-unbundle ∷ Dual tag a→(a,a)
+unbundle ∷ Dual a→(a,a)
 unbundle (Dual x x') = (x,x')
 
-primal ∷ Dual tag a→a
+primal ∷ Dual a→a
 primal (Dual x _) = x
 
-tangent ∷ Dual tag a→a
+tangent ∷ Dual a→a
 tangent (Dual _ x') = x'
 
-lift ∷ Num a ⇒ a → Dual tag a
+lift ∷ Num a ⇒ a → Dual a
 lift = flip Dual 0
 
-liftA1 ∷ Num a ⇒ (a→a) → (a→a) → (Dual tag a→Dual tag a)
+liftA1 ∷ Num a ⇒ (a→a) → (a→a) → (Dual a→Dual a)
 liftA1 f df (Dual x x') = Dual (f x) (x' ⋅ df x)
 
-liftA1_ ∷ Num a ⇒ (a→a) → (a→a→a) → (Dual tag a→Dual tag a)
+liftA1_ ∷ Num a ⇒ (a→a) → (a→a→a) → (Dual a→Dual a)
 liftA1_ f df (Dual x x') = Dual z (x' ⋅ df z x) where
   z = f x
 
-liftA2 ∷ Num a ⇒ (a→a→a) → (a→a→(a,a)) → (Dual tag a→Dual tag a→Dual tag a)
+liftA2 ∷ Num a ⇒ (a→a→a) → (a→a→(a,a)) → (Dual a→Dual a→Dual a)
 liftA2 f df (Dual x x') (Dual y y') = Dual z z' where
   z = f x y
   (dzdx, dzdy) = df x y
   z' = x' ⋅ dzdx + y' ⋅ dzdy
 
-liftA2_ ∷ Num a ⇒ (a→a→a) → (a→a→a→(a,a)) → (Dual tag a→Dual tag a→Dual tag a)
+liftA2_ ∷ Num a ⇒ (a→a→a) → (a→a→a→(a,a)) → (Dual a→Dual a→Dual a)
 liftA2_ f df (Dual x x') (Dual y y') = Dual z z' where
   z = f x y
   (dzdx, dzdy) = df z x y
   z' = x' ⋅ dzdx + y' ⋅ dzdy
 
-instance Eq a ⇒ Eq (Dual tag a) where
+instance Eq a ⇒ Eq (Dual a) where
   Dual x _ == Dual y _ = x ≡ y -- Can use ≡ on RHS but must use == on LHS.
 
-instance Ord a ⇒ Ord (Dual tag a) where
+instance Ord a ⇒ Ord (Dual a) where
   compare (Dual x _) (Dual y _) = compare x y
 
-instance Num a ⇒ Num (Dual tag a) where
+instance Num a ⇒ Num (Dual a) where
   (+)		= liftA2 (+) (\_ _ → (1,1))
   (*)		= liftA2 (⋅) (flip (,)) -- Can use ⋅ on RHS but must use * on LHS.
   signum (Dual x _) = lift $ signum x
@@ -66,14 +67,14 @@ instance Num a ⇒ Num (Dual tag a) where
   abs x		= x ⋅ signum x
   fromInteger	= lift ∘ fromInteger
 
-instance Fractional a ⇒ Fractional (Dual tag a) where
+instance Fractional a ⇒ Fractional (Dual a) where
   recip = liftA1_ recip (\z _ → - z^(2∷Int))
   fromRational	= lift ∘ fromRational
 
 sqr ∷ Num a ⇒ a → a
 sqr = (^(2∷Int))
 
-instance (Eq a, Floating a) => Floating (Dual tag a) where
+instance (Eq a, Floating a) => Floating (Dual a) where
   pi		= lift pi
   exp		= liftA1_ exp const
   sqrt		= liftA1_ sqrt (const ∘ recip ∘ (2⋅))
