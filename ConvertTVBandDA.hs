@@ -24,19 +24,17 @@ import Numeric.Dual (Dual)
 -- via DA.
 
 class (TVB a a' ta, DA a da ba) ⇒ ConvertTVBandDA a a' ta da ba
- | a→a' ta da ba,
-   ta→a,
-   ba→a
  where
-   toDA  ∷ (TVB a a' ta, DA a da ba) ⇒ ta→ba
-   toTVB ∷ (TVB a a' ta, DA a da ba) ⇒ ba→ta
+   toDA  ∷ ta → ba
+   toTVB ∷ ba → ta
 
 instance ConvertTVBandDA Double Double (Dual Double) Double (Dual Double)
  where
    toDA  = id
    toTVB = id
 
--- instance Num a ⇒ ConvertTVBandDA a a (Dual a) a (Dual a) where
+-- instance Num a ⇒ ConvertTVBandDA a a (Dual a) a (Dual a)
+--  where
 --   toDA  = id
 --   toTVB = id
 
@@ -54,21 +52,21 @@ instance (ConvertTVBandDA a a' ta da ba,
          ConvertTVBandDA (a,b) (a',b') (ta,tb) (da,db) (ba,bb)
  where
   toTVB (x,y) = (toTVB x, toTVB y)
-  toDA (x,y) = (toDA x, toDA y)
+  toDA  (x,y) = (toDA x,  toDA y)
 
 instance (ConvertTVBandDA a a' ta da ba)
          ⇒
          ConvertTVBandDA [a] [a'] [ta] [da] [ba]
  where
   toTVB = fmap toTVB
-  toDA = fmap toDA
+  toDA  = fmap toDA
 
 instance (ConvertTVBandDA a a' ta da ba)
          ⇒
          ConvertTVBandDA (Maybe a) (Maybe a') (Maybe ta) (Maybe da) (Maybe ba)
  where
   toTVB = fmap toTVB
-  toDA = fmap toDA
+  toDA  = fmap toDA
 
 instance (ConvertTVBandDA a a' ta da ba,
           ConvertTVBandDA b b' tb db bb)
@@ -79,5 +77,5 @@ instance (ConvertTVBandDA a a' ta da ba,
  where
   toTVB (Left  da) = Left  (toTVB da)
   toTVB (Right db) = Right (toTVB db)
-  toDA (Left  ta) = Left  (toDA ta)
-  toDA (Right tb) = Right (toDA tb)
+  toDA  (Left  ta) = Left  (toDA ta)
+  toDA  (Right tb) = Right (toDA tb)
