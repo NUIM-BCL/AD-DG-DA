@@ -4,14 +4,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
+-- {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module DifferentialAlgebra (DA, bundle, unbundle, primal, tangent, zero, lift)
 where
 
 import Prelude.Unicode
 
-import Numeric.Dual (Dual)
-import qualified Numeric.Dual as Dual (lift, bundle, unbundle, primal, tangent)
+import Numeric.Dual ({- DualNumber, -} Dual)
+import qualified Numeric.Dual as Dual (bundle, unbundle, primal, tangent, zero, lift)
 
 -- | Differential Algebra domain.
 -- The type class (DA t dt bt) means -- that t is the type of primal
@@ -34,16 +35,16 @@ class DA a da ba | a→ba, ba→a da where
 --   unbundle	= Dual.unbundle
 --   primal	= Dual.primal
 --   tangent	= Dual.tangent
+--   zero		= Dual.zero
 --   lift		= Dual.lift
---   zero		= const 0
 
 instance DA Double Double (Dual Double) where
   bundle	= Dual.bundle
   unbundle	= Dual.unbundle
   primal	= Dual.primal
   tangent	= Dual.tangent
+  zero		= Dual.zero
   lift		= Dual.lift
-  zero		= const 0
 
 -- It is unclear what the 2nd arg to DA should be here.  The (ba→db) is
 -- just a placeholder.  The "right thing" is probably to get rid of

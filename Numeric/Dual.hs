@@ -1,12 +1,24 @@
 {-# LANGUAGE UnicodeSyntax #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FunctionalDependencies #-}
 
 {- Minimal and simplistic implementation of dual numbers -}
 
-module Numeric.Dual (Dual, lift, bundle, unbundle, primal, tangent,
+module Numeric.Dual (DualNumber, Dual,
+                     bundle, unbundle, primal, tangent, zero, lift,
                      liftA1, liftA1_, liftA2, liftA2_)
 where
 
 import Prelude.Unicode
+
+class Num a ⇒ DualNumber a b | a→b, b→a where
+  bundle ∷ a → a → b
+  unbundle ∷ b → (a,a)
+  primal ∷ b → a
+  tangent ∷ b → a
+  zero ∷ a → a
+  lift ∷ a → b
 
 -- | The 'Dual' type is a concrete representation of a Dual number,
 -- meaning a number augmented with a derivative (Clifford, 1873).
@@ -17,22 +29,15 @@ import Prelude.Unicode
 -- These are untagged, so perturbation confusion (Siskind and
 -- Pearlmutter, 2008) must be avoided by users.
 data Dual a = Dual a a
-                deriving (Read, Show)
+            deriving (Read, Show)
 
-bundle ∷ a→a→Dual a
-bundle = Dual
-
-unbundle ∷ Dual a→(a,a)
-unbundle (Dual x x') = (x,x')
-
-primal ∷ Dual a→a
-primal (Dual x _) = x
-
-tangent ∷ Dual a→a
-tangent (Dual _ x') = x'
-
-lift ∷ Num a ⇒ a → Dual a
-lift = flip Dual 0
+instance Num a ⇒ DualNumber a (Dual a) where
+  bundle = Dual
+  unbundle (Dual x x') = (x,x')
+  primal (Dual x _) = x
+  tangent (Dual _ x') = x'
+  zero = const 0
+  lift x = bundle x (zero x)
 
 liftA1 ∷ Num a ⇒ (a→a) → (a→a) → (Dual a→Dual a)
 liftA1 f df (Dual x x') = Dual (f x) (x' ⋅ df x)

@@ -3,14 +3,15 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
+-- {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module TangentVectorBundle (TVB, bundle, unbundle, primal, tangent, zero, lift)
 where
 
 import Prelude.Unicode
 
-import Numeric.Dual (Dual)
-import qualified Numeric.Dual as Dual (lift, bundle, unbundle, primal, tangent)
+import Numeric.Dual ({- DualNumber, -} Dual)
+import qualified Numeric.Dual as Dual (bundle, unbundle, primal, tangent, zero, lift)
 
 -- Tangent vector bundle
 class TVB a a' ta | a→ta, ta→a a' where
@@ -31,7 +32,7 @@ class TVB a a' ta | a→ta, ta→a a' where
 --   primal	= Dual.primal
 --   tangent	= Dual.tangent
 --   lift		= Dual.lift
---   zero		= const 0
+--   zero		= Dual.zero
 
 instance TVB Double Double (Dual Double) where
   bundle	= Dual.bundle
@@ -39,7 +40,7 @@ instance TVB Double Double (Dual Double) where
   primal	= Dual.primal
   tangent	= Dual.tangent
   lift		= Dual.lift
-  zero		= const 0
+  zero		= Dual.zero
 
 -- Differential Geometric (DG) definition of the tangent vector bundle
 -- of a function type.
