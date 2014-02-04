@@ -23,7 +23,7 @@ import Numeric.Dual (Dual)
 -- Need to define converters DA to/from TVB, in order to implement DG
 -- via DA.
 
-class ConvertTVBandDA a a' ta da ba
+class (TVB a a' ta, DA a da ba) ⇒ ConvertTVBandDA a a' ta da ba
  | a→a' ta da ba,
    ta→a,
    ba→a
@@ -36,16 +36,11 @@ instance ConvertTVBandDA Double Double (Dual Double) Double (Dual Double)
    toDA  = id
    toTVB = id
 
--- instance (Num a, TVB a a (Dual a), DA a a (Dual a))
---          ⇒ ConvertTVBandDA a a (Dual a) a (Dual a) where
+-- instance Num a ⇒ ConvertTVBandDA a a (Dual a) a (Dual a) where
 --   toDA  = id
 --   toTVB = id
 
-instance (TVB a a' ta,
-          DA a da ba,
-          ConvertTVBandDA a a' ta da ba,
-          TVB b b' tb,
-          DA b db bb,
+instance (ConvertTVBandDA a a' ta da ba,
           ConvertTVBandDA b b' tb db bb)
          ⇒
          ConvertTVBandDA (a→b) (a→b') (a→tb) (ba→db) (ba→bb)
@@ -53,11 +48,7 @@ instance (TVB a a' ta,
   toTVB f = toTVB ∘ f ∘ DA.lift
   toDA  f = toDA  ∘ f ∘ DA.primal -- *unsafe* unless DA tangent is zero
 
-instance (TVB a a' ta,
-          DA a da ba,
-          ConvertTVBandDA a a' ta da ba,
-          TVB b b' tb,
-          DA b db bb,
+instance (ConvertTVBandDA a a' ta da ba,
           ConvertTVBandDA b b' tb db bb)
          ⇒
          ConvertTVBandDA (a,b) (a',b') (ta,tb) (da,db) (ba,bb)
@@ -65,29 +56,21 @@ instance (TVB a a' ta,
   toTVB (x,y) = (toTVB x, toTVB y)
   toDA (x,y) = (toDA x, toDA y)
 
-instance (TVB a a' ta,
-          DA a da ba,
-          ConvertTVBandDA a a' ta da ba)
+instance (ConvertTVBandDA a a' ta da ba)
          ⇒
          ConvertTVBandDA [a] [a'] [ta] [da] [ba]
  where
   toTVB = fmap toTVB
   toDA = fmap toDA
 
-instance (TVB a a' ta,
-          DA a da ba,
-          ConvertTVBandDA a a' ta da ba)
+instance (ConvertTVBandDA a a' ta da ba)
          ⇒
          ConvertTVBandDA (Maybe a) (Maybe a') (Maybe ta) (Maybe da) (Maybe ba)
  where
   toTVB = fmap toTVB
   toDA = fmap toDA
 
-instance (TVB a a' ta,
-          DA a da ba,
-          ConvertTVBandDA a a' ta da ba,
-          TVB b b' tb,
-          DA b db bb,
+instance (ConvertTVBandDA a a' ta da ba,
           ConvertTVBandDA b b' tb db bb)
          ⇒
          ConvertTVBandDA (Either a b)

@@ -4,18 +4,14 @@ module Diff (ConvertTVBandDA, diff, pushforward)
 where
 
 import Prelude.Unicode
-import DifferentialAlgebra (DA)
 import qualified DifferentialAlgebra as DA (lift)
-import TangentVectorBundle (TVB)
 import qualified TangentVectorBundle as TVB (tangent, bundle)
 import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
 
 -- ACTUAL DERIVATIVE-TAKING OPERATORS!
 -- (Well, scaffolding and types.)
 
-pushforward ∷ (TVB a a' ta, DA a da ba,
-               TVB b b' tb, DA b db bb,
-               ConvertTVBandDA a a' ta da ba,
+pushforward ∷ (ConvertTVBandDA a a' ta da ba,
                ConvertTVBandDA b b' tb db bb)
               ⇒ (a→b)→(ta→tb)
 
@@ -26,12 +22,8 @@ pushforward ∷ (TVB a a' ta, DA a da ba,
 pushforward f = toTVB ∘ DA.lift f ∘ toDA
 
 -- One day ⅅ or ⅆ.
-diff ∷ (TVB a a' ta,
-        DA a da ba,
-        Num a',
+diff ∷ (Num a',
         ConvertTVBandDA a a' ta da ba,
-        DA b db bb,
-        TVB b b' tb,
         ConvertTVBandDA b b' tb db bb)
        ⇒ (a→b)→(a→b')
 
