@@ -16,6 +16,10 @@ import Numeric.Dual (Dual)
 
 -- type ℝ = Double
 
+-- This is not (==).
+-- (⩵)∷Eq a⇒a→a→Bool
+-- (⩵)=(≡)
+
 -- Need to define converters DA to/from TVB, in order to implement DG
 -- via DA.
 
