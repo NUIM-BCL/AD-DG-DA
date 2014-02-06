@@ -4,7 +4,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
--- {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TupleSections #-}
 
 module DifferentialAlgebra (DA, bundle, unbundle, primal, tangent, zero, lift)
 where
@@ -99,3 +99,19 @@ instance (DA a da ba, DA b db bb) ⇒ DA (Either a b) (Either da db) (Either ba 
   tangent = either (Left ∘ tangent) (Right ∘ tangent)
   zero = either (Left ∘ zero) (Right ∘ zero)
   lift = either (Left ∘ lift) (Right ∘ lift)
+
+instance DA Bool () Bool where
+  bundle = const
+  unbundle = (,())
+  primal = id
+  tangent = const ()
+  zero = const ()
+  lift = id
+
+instance DA () () () where
+  bundle = const
+  unbundle = (,())
+  primal = id
+  tangent = const ()
+  zero = const ()
+  lift = id

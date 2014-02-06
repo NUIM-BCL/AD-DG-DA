@@ -3,7 +3,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE FunctionalDependencies #-}
 {-# LANGUAGE UndecidableInstances #-}
--- {-# LANGUAGE NoMonomorphismRestriction #-}
+{-# LANGUAGE TupleSections #-}
 
 module TangentVectorBundle (TVB, bundle, unbundle, primal, tangent, zero, lift)
 where
@@ -88,3 +88,19 @@ instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (Either a b) (Either a' b') (Either 
   tangent = either (Left ∘ tangent) (Right ∘ tangent)
   zero = either (Left ∘ zero) (Right ∘ zero)
   lift = either (Left ∘ lift) (Right ∘ lift)
+
+instance TVB Bool () Bool where
+  bundle = const
+  unbundle = (,())
+  primal = id
+  tangent = const ()
+  zero = const ()
+  lift = id
+
+instance TVB () () () where
+  bundle = const
+  unbundle = (,())
+  primal = id
+  tangent = const ()
+  zero = const ()
+  lift = id

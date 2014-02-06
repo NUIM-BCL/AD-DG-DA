@@ -73,3 +73,13 @@ instance (ConvertTVBandDA a a' ta da ba,
   toTVB (Right db) = Right (toTVB db)
   toDA  (Left  ta) = Left  (toDA ta)
   toDA  (Right tb) = Right (toDA tb)
+
+instance ConvertTVBandDA Bool () Bool () Bool
+ where
+  toTVB = id
+  toDA  = id
+
+instance ConvertTVBandDA () () () () ()
+ where
+  toTVB = id
+  toDA  = id
