@@ -49,6 +49,7 @@ instance TVB b b' tb ⇒ TVB (a→b) (a→b') (a→tb) where
   primal f = primal ∘ f
   tangent f = tangent ∘ f
   zero f = zero ∘ f
+  lift f = lift ∘ f
 
 instance TVB a a' ta ⇒ TVB [a] [a'] [ta] where -- lengths should also be equal
   bundle = zipWith bundle
