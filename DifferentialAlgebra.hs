@@ -11,7 +11,7 @@ where
 
 import Prelude.Unicode
 
-import Numeric.Dual ({- DualNumber, -} Dual)
+import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (bundle, unbundle, primal, tangent, zero, lift)
 
 -- | Differential Algebra domain.
@@ -39,6 +39,14 @@ class DA a da ba | a→ba, ba→a da where
 --   lift		= Dual.lift
 
 instance DA Double Double (Dual Double) where
+  bundle	= Dual.bundle
+  unbundle	= Dual.unbundle
+  primal	= Dual.primal
+  tangent	= Dual.tangent
+  zero		= Dual.zero
+  lift		= Dual.lift
+
+instance Num a ⇒ DA (Dual a) (Dual a) (Dual (Dual a)) where
   bundle	= Dual.bundle
   unbundle	= Dual.unbundle
   primal	= Dual.primal

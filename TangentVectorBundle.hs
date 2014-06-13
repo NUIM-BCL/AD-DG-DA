@@ -10,7 +10,7 @@ where
 
 import Prelude.Unicode
 
-import Numeric.Dual ({- DualNumber, -} Dual)
+import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (bundle, unbundle, primal, tangent, zero, lift)
 
 -- Tangent vector bundle
@@ -41,6 +41,14 @@ instance TVB Double Double (Dual Double) where
   tangent	= Dual.tangent
   lift		= Dual.lift
   zero		= Dual.zero
+
+instance Num a ⇒ TVB (Dual a) (Dual a) (Dual (Dual a)) where
+  bundle	= Dual.bundle
+  unbundle	= Dual.unbundle
+  primal	= Dual.primal
+  tangent	= Dual.tangent
+  zero		= Dual.zero
+  lift		= Dual.lift
 
 -- Differential Geometric (DG) definition of the tangent vector bundle
 -- of a function type.

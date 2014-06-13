@@ -5,7 +5,7 @@
 
 {- Minimal and simplistic implementation of dual numbers -}
 
-module Numeric.Dual (DualNumber, Dual,
+module Numeric.Dual (Dual,
                      bundle, unbundle, primal, tangent, zero, lift,
                      liftA1, liftA1_, liftA2, liftA2_)
 where
