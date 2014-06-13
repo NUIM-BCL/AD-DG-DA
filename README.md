@@ -10,10 +10,10 @@ like this would require a reflective mechanism, which is unavailable.
 
 There are two main mechanisms involved.  One is a "tangent vector
 bundle" type class, which is the ````T```` functor from differential
-geometry and has the property ````T (a->b) = a -> T b```` and ````T
+geometry and has the property ````T (a → b) = a → T b```` and ````T
 Double = Dual Double````.  The other is a "differential algebra" type
-class, which lifts an object to replace all ````Double````s by
-````Dual Double```` inside and out, so ````D (a->b) = D a -> D b````.
+class, which lifts an object to replace each ````Double```` value by a
+````Dual Double```` inside and out, so ````D (a → b) = D a → D b````.
 The former is the "right" API for differentiation, namely the
 pushforward operator.  The latter is the natural implementation
 mechanism.  Goo is defined to translate between the two as needed, at
@@ -37,47 +37,47 @@ Prelude> :l Diff.hs
 [5 of 5] Compiling Diff             ( Diff.hs, interpreted )
 Ok, modules loaded: Diff, ConvertTVBandDA, DifferentialAlgebra, TangentVectorBundle, Numeric.Dual.
 
-*Diff> :m + Numeric.Dual 
+> :m + Numeric.Dual 
 
-*Diff Numeric.Dual> :t diff (sin::Double->Double)
+> :t diff (sin::Double -> Double)
 
-diff (sin::Double->Double) :: Double -> Double
+diff (sin::Double -> Double) :: Double -> Double
 
-*Diff Numeric.Dual> :t iterate diff ((*)::Double->Double->Double)
+> :t iterate diff ((*)::Double -> Double -> Double)
 
-iterate diff ((*)::Double->Double->Double)
+iterate diff ((*)::Double -> Double -> Double)
   :: [Double -> Double -> Double]
 
-*Diff Numeric.Dual> :t pushforward ((*)::Double->Double->Double)
+> :t pushforward ((*)::Double -> Double -> Double)
 
-pushforward ((*)::Double->Double->Double)
+pushforward ((*)::Double -> Double -> Double)
   :: Dual Double -> Double -> Dual Double
 
-*Diff Numeric.Dual> :t pushforward (pushforward ((*)::Double->Double->Double))
+> :t pushforward (pushforward ((*)::Double -> Double -> Double))
 
-pushforward (pushforward ((*)::Double->Double->Double))
+pushforward (pushforward ((*)::Double -> Double -> Double))
   :: Dual (Dual Double) -> Double -> Dual (Dual Double)
 
-*Diff Numeric.Dual> :t diff (pushforward (pushforward ((*)::Double->Double->Double)))
+> :t diff (pushforward (pushforward ((*)::Double -> Double -> Double)))
 
-diff (pushforward (pushforward ((*)::Double->Double->Double)))
+diff (pushforward (pushforward ((*)::Double -> Double -> Double)))
   :: Dual (Dual Double) -> Double -> Dual (Dual Double)
 
-*Diff Numeric.Dual> :t pushforward (flip (pushforward (pushforward ((*)::Double->Double->Double))))
+> :t pushforward (flip (pushforward (pushforward ((*)::Double -> Double -> Double))))
 
-pushforward (flip (pushforward (pushforward ((*)::Double->Double->Double))))
+pushforward (flip (pushforward (pushforward ((*)::Double -> Double -> Double))))
   :: Dual Double -> Dual (Dual Double) -> Dual (Dual (Dual Double))
 
-*Diff Numeric.Dual> :t pushforward (uncurry ((*)::Double->Double->Double))
+> :t pushforward (uncurry ((*)::Double -> Double -> Double))
 
-pushforward (uncurry ((*)::Double->Double->Double))
+pushforward (uncurry ((*)::Double -> Double -> Double))
   :: (Dual Double, Dual Double) -> Dual Double
 
-*Diff Numeric.Dual> :t pushforward (sum::[Double]->Double)
+> :t pushforward (sum::[Double] -> Double)
 
-pushforward (sum::[Double]->Double) :: [Dual Double] -> Dual Double
+pushforward (sum::[Double] -> Double) :: [Dual Double] -> Dual Double
 
-*Diff Numeric.Dual> :t pushforward sum
+> :t pushforward sum
 
 pushforward sum
   :: (Num a, ConvertTVBandDA a a' ta da ba) => [ta] -> ta
