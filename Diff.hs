@@ -5,7 +5,7 @@ where
 
 import Prelude.Unicode
 import qualified DifferentialAlgebra as DA (lift)
-import qualified TangentVectorBundle as TVB (tangent, bundle)
+import qualified TangentVectorBundle as TVB (tangent, bundle, unbundle)
 import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
 
 -- ACTUAL DERIVATIVE-TAKING OPERATORS!
@@ -33,3 +33,12 @@ diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
 --  ∫ dx f a b = dx ⋅ sum [f x | x←[a,a+dx..b]]
 -- because ∫ is infix, and also because
 --  all (<=1) [0,0.26..1] ≡ False
+
+
+-- This is a "conventional" API for forward AD.
+
+forwardAD ∷ (ConvertTVBandDA a a' ta da ba,
+             ConvertTVBandDA b b' tb db bb)
+            ⇒ (a -> b) -> a -> a' -> (b, b')
+
+forwardAD f x x' = TVB.unbundle $ pushforward f $ TVB.bundle x x'
