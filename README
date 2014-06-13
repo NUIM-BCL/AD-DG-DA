@@ -1,5 +1,0 @@
-Get the type of AD right in Haskell.
-Doesn't actually work because DA.lift of a function requires
-reflection.  But the types do!  (Mostly.)
-Forward mode only for now, but there is no barrier in principle to
-extending the types to cover reverse mode.
