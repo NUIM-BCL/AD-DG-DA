@@ -88,7 +88,7 @@ instance Fractional a ⇒ Fractional (Dual a) where
 sqr ∷ Num a ⇒ a → a
 sqr = (^(2∷Int))
 
-instance (Eq a, Floating a) => Floating (Dual a) where
+instance (Eq a, Floating a) ⇒ Floating (Dual a) where
   pi		= lift pi
   exp		= liftA1_ exp const
   sqrt		= liftA1_ sqrt (const ∘ recip ∘ (2⋅))
@@ -102,9 +102,9 @@ instance (Eq a, Floating a) => Floating (Dual a) where
   (**) _ (Dual 0 0) = 1
   (**) (Dual x0 0) (Dual y0 0) = lift (x0**y0)
   (**) x (Dual y0 0) = liftA1 (**y0) ((y0*) ∘ (**(y0-1))) x
-  (**) x@(Dual 0 _) y = liftA2 (**) (\x0 y0 -> (y0*x0**(y0-1), 0)) x y
-  (**) x@(Dual _ 0) y = liftA2_ (**) (\z x0 _ -> (0, z*log x0)) x y
-  (**) x y	= liftA2_ (**) (\z x0 y0 -> (y0*z/x0, z*log x0)) x y
+  (**) x@(Dual 0 _) y = liftA2 (**) (\x0 y0 → (y0*x0**(y0-1), 0)) x y
+  (**) x@(Dual _ 0) y = liftA2_ (**) (\z x0 _ → (0, z*log x0)) x y
+  (**) x y	= liftA2_ (**) (\z x0 y0 → (y0*z/x0, z*log x0)) x y
   sin		= liftA1 sin cos
   cos		= liftA1 cos (negate ∘ sin)
   tan		= liftA1 tan (recip ∘ sqr ∘ cos)
