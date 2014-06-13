@@ -1,6 +1,6 @@
 {-# LANGUAGE UnicodeSyntax #-}
 
-module Diff (ConvertTVBandDA, diff, pushforward)
+module Diff (ConvertTVBandDA, diff, pushforward, forwardAD)
 where
 
 import Prelude.Unicode
@@ -25,7 +25,7 @@ pushforward f = toTVB ∘ DA.lift f ∘ toDA
 diff ∷ (Num a',
         ConvertTVBandDA a a' ta da ba,
         ConvertTVBandDA b b' tb db bb)
-       ⇒ (a→b)→(a→b')
+       ⇒ (a → b) → (a → b')
 
 diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
 
@@ -39,6 +39,6 @@ diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
 
 forwardAD ∷ (ConvertTVBandDA a a' ta da ba,
              ConvertTVBandDA b b' tb db bb)
-            ⇒ (a -> b) -> a -> a' -> (b, b')
+            ⇒ (a → b) → a → a' → (b, b')
 
-forwardAD f x x' = TVB.unbundle $ pushforward f $ TVB.bundle x x'
+forwardAD f x = TVB.unbundle ∘ pushforward f ∘ TVB.bundle x
