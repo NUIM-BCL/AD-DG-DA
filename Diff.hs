@@ -13,7 +13,7 @@ import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
 
 pushforward ∷ (ConvertTVBandDA a a' ta da ba,
                ConvertTVBandDA b b' tb db bb)
-              ⇒ (a→b)→(ta→tb)
+              ⇒ (a → b) → (ta → tb)
 
 -- This cannot actually work without a "∀" contaminating its signature
 -- for the function argument, so that it can actually be lifted.
