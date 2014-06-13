@@ -67,4 +67,18 @@ diff (pushforward (pushforward ((*)::Double->Double->Double)))
 
 pushforward (flip (pushforward (pushforward ((*)::Double->Double->Double))))
   :: Dual Double -> Dual (Dual Double) -> Dual (Dual (Dual Double))
+
+*Diff Numeric.Dual> :t pushforward (uncurry ((*)::Double->Double->Double))
+
+pushforward (uncurry ((*)::Double->Double->Double))
+  :: (Dual Double, Dual Double) -> Dual Double
+
+*Diff Numeric.Dual> :t pushforward (sum::[Double]->Double)
+
+pushforward (sum::[Double]->Double) :: [Dual Double] -> Dual Double
+
+*Diff Numeric.Dual> :t pushforward sum
+
+pushforward sum
+  :: (Num a, ConvertTVBandDA a a' ta da ba) => [ta] -> ta
 ````
