@@ -39,6 +39,15 @@ instance Num a ⇒ DualNumber a (Dual a) where
   zero = const 0
   lift x = bundle x (zero x)
 
+-- NOTE: everything below this point constitutes an overloading-based
+-- implementation of Forward AD, but ../Diff.hs assumes a "DA.lift"
+-- based implementation.  So none of the below is actually hooked into
+-- the pushforward operator or anything else defined in ../Diff.hs.
+--
+-- *Except*
+--   instance Num a ⇒ Num (Dual a) ...
+-- which is needed, as is fromInteger which it defines.
+
 liftA1 ∷ Num a ⇒ (a→a) → (a→a) → (Dual a→Dual a)
 liftA1 f df (Dual x x') = Dual (f x) (x' ⋅ df x)
 
