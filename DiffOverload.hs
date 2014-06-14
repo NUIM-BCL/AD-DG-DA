@@ -6,8 +6,8 @@ where
 import Prelude.Unicode
 import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (bundle)
-import qualified TangentVectorBundle as TVB (tangent)
-import ConvertTVBandDA (ConvertTVBandDA, toTVB)
+import qualified TangentVectorBundle as TVB (tangent, bundle, unbundle)
+import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
 
 -- This version relies upon the type class system to ensure that the
 -- function argument f is already lifted into the DA domain.
@@ -17,3 +17,9 @@ diff ∷ (Num a,
        ⇒ (Dual a → bb) → (a → b')
 
 diff f = TVB.tangent ∘ toTVB ∘ f ∘ flip Dual.bundle 1
+
+forwardAD ∷ (ConvertTVBandDA a a' ta da ba,
+             ConvertTVBandDA b b' tb db bb)
+       ⇒ (ba → bb) → a → a' → (b, b')
+
+forwardAD f x x' = TVB.unbundle $ toTVB $ f $ toDA $ TVB.bundle x x'
