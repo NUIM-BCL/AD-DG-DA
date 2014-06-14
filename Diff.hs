@@ -17,7 +17,8 @@ pushforward ∷ (ConvertTVBandDA a a' ta da ba,
 
 -- This cannot actually work without a "∀" contaminating its signature
 -- for the function argument, so that it can actually be lifted.
--- Which requires (among other things) RankNTypes.
+-- Which requires (among other things) RankNTypes.  Or, a reflective
+-- mechanism to implement DA.lift of a function object.
 
 pushforward f = toTVB ∘ DA.lift f ∘ toDA
 
