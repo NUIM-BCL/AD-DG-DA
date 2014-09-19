@@ -1,18 +1,18 @@
 {-# LANGUAGE UnicodeSyntax #-}
 
-module Diff (ConvertTVBandDA, diff, pushforward, forwardAD)
+module Diff (ConvertTBandDA, diff, pushforward, forwardAD)
 where
 
 import Prelude.Unicode
 import qualified DifferentialAlgebra as DA (lift)
-import qualified TangentVectorBundle as TVB (tangent, bundle, unbundle)
-import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
+import qualified TangentBundle as TB (tangent, bundle, unbundle)
+import ConvertTBandDA (ConvertTBandDA, toDA, toTB)
 
 -- ACTUAL DERIVATIVE-TAKING OPERATORS!
 -- (Well, scaffolding and types.)
 
-pushforward ∷ (ConvertTVBandDA a a' ta da ba,
-               ConvertTVBandDA b b' tb db bb)
+pushforward ∷ (ConvertTBandDA a a' ta da ba,
+               ConvertTBandDA b b' tb db bb)
               ⇒ (a → b) → (ta → tb)
 
 -- This cannot actually work without a "∀" contaminating its signature
@@ -20,15 +20,15 @@ pushforward ∷ (ConvertTVBandDA a a' ta da ba,
 -- Which requires (among other things) RankNTypes.  Or, a reflective
 -- mechanism to implement DA.lift of a function object.
 
-pushforward f = toTVB ∘ DA.lift f ∘ toDA
+pushforward f = toTB ∘ DA.lift f ∘ toDA
 
 -- One day ⅅ or ⅆ.
 diff ∷ (Num a',
-        ConvertTVBandDA a a' ta da ba,
-        ConvertTVBandDA b b' tb db bb)
+        ConvertTBandDA a a' ta da ba,
+        ConvertTBandDA b b' tb db bb)
        ⇒ (a → b) → (a → b')
 
-diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
+diff f = TB.tangent ∘ pushforward f ∘ flip TB.bundle 1
 
 -- This won't work
 --  ∫ dx f a b = dx ⋅ sum [f x | x←[a,a+dx..b]]
@@ -38,8 +38,8 @@ diff f = TVB.tangent ∘ pushforward f ∘ flip TVB.bundle 1
 
 -- This is a "conventional" API for forward AD.
 
-forwardAD ∷ (ConvertTVBandDA a a' ta da ba,
-             ConvertTVBandDA b b' tb db bb)
+forwardAD ∷ (ConvertTBandDA a a' ta da ba,
+             ConvertTBandDA b b' tb db bb)
             ⇒ (a → b) → a → a' → (b, b')
 
-forwardAD f x = TVB.unbundle ∘ pushforward f ∘ TVB.bundle x
+forwardAD f x = TB.unbundle ∘ pushforward f ∘ TB.bundle x

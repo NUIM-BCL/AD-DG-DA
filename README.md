@@ -8,11 +8,11 @@ This cannot be used to actually take derivatives, because
 ````DA.lift```` is not implemented for function objects.  It seems
 like this would require a reflective mechanism, which is unavailable.
 
-There are two main mechanisms involved.  One is a "tangent vector
-bundle" type class, which is the ````T```` functor from differential
-geometry and has the property ````T (a → b) = a → T b```` and ````T
-Double = Dual Double````.  The other is a "differential algebra" type
-class, which lifts an object to replace each ````Double```` value by a
+There are two main mechanisms involved.  One is a "tangent bundle"
+type class, which is the ````T```` functor from differential geometry
+and has the property ````T (a → b) = a → T b```` and ````T Double =
+Dual Double````.  The other is a "differential algebra" type class,
+which lifts an object to replace each ````Double```` value by a
 ````Dual Double```` inside and out, so ````D (a → b) = D a → D b````.
 The former is the "right" API for differentiation, namely the
 pushforward operator.  The latter is the natural implementation
@@ -31,11 +31,11 @@ GHCi, version 7.6.3
 
 Prelude> :l Diff.hs
 [1 of 5] Compiling Numeric.Dual     ( Numeric/Dual.hs, interpreted )
-[2 of 5] Compiling TangentVectorBundle ( TangentVectorBundle.hs, interpreted )
+[2 of 5] Compiling TangentBundle    ( TangentBundle.hs, interpreted )
 [3 of 5] Compiling DifferentialAlgebra ( DifferentialAlgebra.hs, interpreted )
-[4 of 5] Compiling ConvertTVBandDA  ( ConvertTVBandDA.hs, interpreted )
+[4 of 5] Compiling ConvertTBandDA   ( ConvertTBandDA.hs, interpreted )
 [5 of 5] Compiling Diff             ( Diff.hs, interpreted )
-Ok, modules loaded: Diff, ConvertTVBandDA, DifferentialAlgebra, TangentVectorBundle, Numeric.Dual.
+Ok, modules loaded: Diff, ConvertTBandDA, DifferentialAlgebra, TangentBundle, Numeric.Dual.
 
 > :m + Numeric.Dual 
 
@@ -80,5 +80,5 @@ pushforward (sum::[Double] -> Double) :: [Dual Double] -> Dual Double
 > :t pushforward sum
 
 pushforward sum
-  :: (Num a, ConvertTVBandDA a a' ta da ba) => [ta] -> ta
+  :: (Num a, ConvertTBandDA a a' ta da ba) => [ta] -> ta
 ````

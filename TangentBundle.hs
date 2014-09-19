@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE TupleSections #-}
 
-module TangentVectorBundle (TVB, bundle, unbundle, primal, tangent, zero, lift)
+module TangentBundle (TB, bundle, unbundle, primal, tangent, zero, lift)
 where
 
 import Prelude.Unicode
@@ -13,8 +13,8 @@ import Prelude.Unicode
 import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (bundle, unbundle, primal, tangent, zero, lift)
 
--- Tangent vector bundle
-class TVB a a' ta | a→ta, ta→a a' where
+-- Tangent bundle
+class TB a a' ta | a→ta, ta→a a' where
   bundle ∷ a→a'→ta
   unbundle ∷ ta→(a,a')
   unbundle x = (primal x, tangent x)
@@ -26,7 +26,7 @@ class TVB a a' ta | a→ta, ta→a a' where
   lift ∷ a→ta
   lift x = bundle x (zero x)
 
--- instance Num a ⇒ TVB a a (Dual a) where
+-- instance Num a ⇒ TB a a (Dual a) where
 --   bundle	= Dual.bundle
 --   unbundle	= Dual.unbundle
 --   primal	= Dual.primal
@@ -34,7 +34,7 @@ class TVB a a' ta | a→ta, ta→a a' where
 --   lift		= Dual.lift
 --   zero		= Dual.zero
 
-instance TVB Double Double (Dual Double) where
+instance TB Double Double (Dual Double) where
   bundle	= Dual.bundle
   unbundle	= Dual.unbundle
   primal	= Dual.primal
@@ -42,7 +42,7 @@ instance TVB Double Double (Dual Double) where
   lift		= Dual.lift
   zero		= Dual.zero
 
-instance Num a ⇒ TVB (Dual a) (Dual a) (Dual (Dual a)) where
+instance Num a ⇒ TB (Dual a) (Dual a) (Dual (Dual a)) where
   bundle	= Dual.bundle
   unbundle	= Dual.unbundle
   primal	= Dual.primal
@@ -50,23 +50,23 @@ instance Num a ⇒ TVB (Dual a) (Dual a) (Dual (Dual a)) where
   zero		= Dual.zero
   lift		= Dual.lift
 
--- Differential Geometric (DG) definition of the tangent vector bundle
+-- Differential Geometric (DG) definition of the tangent bundle
 -- of a function type.
-instance TVB b b' tb ⇒ TVB (a→b) (a→b') (a→tb) where
+instance TB b b' tb ⇒ TB (a→b) (a→b') (a→tb) where
   bundle f f' x = bundle (f x) (f' x)
   primal f = primal ∘ f
   tangent f = tangent ∘ f
   zero f = zero ∘ f
   lift f = lift ∘ f
 
-instance TVB a a' ta ⇒ TVB [a] [a'] [ta] where -- lengths should also be equal
+instance TB a a' ta ⇒ TB [a] [a'] [ta] where -- lengths should also be equal
   bundle = zipWith bundle
   primal = fmap primal
   tangent = fmap tangent
   zero = fmap zero
   lift = fmap lift
 
-instance TVB a a' ta ⇒ TVB (Maybe a) (Maybe a') (Maybe ta) where
+instance TB a a' ta ⇒ TB (Maybe a) (Maybe a') (Maybe ta) where
   bundle (Just x) (Just dx) = Just (bundle x dx)
   bundle Nothing Nothing = Nothing
   bundle _ _ = error "nonconformant bundle"
@@ -77,7 +77,7 @@ instance TVB a a' ta ⇒ TVB (Maybe a) (Maybe a') (Maybe ta) where
   zero = fmap zero
   lift = fmap lift
 
-instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (a,b) (a',b') (ta,tb) where
+instance (TB a a' ta, TB b b' tb) ⇒ TB (a,b) (a',b') (ta,tb) where
   bundle (x,y) (x',y') = (bundle x x', bundle y y')
   unbundle (tx,ty) = ((x,y),(x',y')) where
     (x,x') = unbundle tx
@@ -87,7 +87,7 @@ instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (a,b) (a',b') (ta,tb) where
   zero (x,y) = (zero x, zero y)
   lift (x,y) = (lift x, lift y)
 
-instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (Either a b) (Either a' b') (Either ta tb) where
+instance (TB a a' ta, TB b b' tb) ⇒ TB (Either a b) (Either a' b') (Either ta tb) where
   bundle (Left x) (Left dx) = Left (bundle x dx)
   bundle (Right x) (Right dx) = Right (bundle x dx)
   bundle _ _ = error "nonconformant bundle"
@@ -98,7 +98,7 @@ instance (TVB a a' ta, TVB b b' tb) ⇒ TVB (Either a b) (Either a' b') (Either 
   zero = either (Left ∘ zero) (Right ∘ zero)
   lift = either (Left ∘ lift) (Right ∘ lift)
 
-instance TVB Bool () Bool where
+instance TB Bool () Bool where
   bundle = const
   unbundle = (,())
   primal = id
@@ -106,7 +106,7 @@ instance TVB Bool () Bool where
   zero = const ()
   lift = id
 
-instance TVB () () () where
+instance TB () () () where
   bundle = const
   unbundle = (,())
   primal = id

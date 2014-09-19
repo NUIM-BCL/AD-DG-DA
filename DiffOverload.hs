@@ -6,20 +6,20 @@ where
 import Prelude.Unicode
 import Numeric.Dual (Dual)
 import qualified Numeric.Dual as Dual (bundle)
-import qualified TangentVectorBundle as TVB (tangent, bundle, unbundle)
-import ConvertTVBandDA (ConvertTVBandDA, toDA, toTVB)
+import qualified TangentBundle as TB (tangent, bundle, unbundle)
+import ConvertTBandDA (ConvertTBandDA, toDA, toTB)
 
 -- This version relies upon the type class system to ensure that the
 -- function argument f is already lifted into the DA domain.
 
 diff ∷ (Num a,
-        ConvertTVBandDA b b' tb db bb)
+        ConvertTBandDA b b' tb db bb)
        ⇒ (Dual a → bb) → (a → b')
 
-diff f = TVB.tangent ∘ toTVB ∘ f ∘ flip Dual.bundle 1
+diff f = TB.tangent ∘ toTB ∘ f ∘ flip Dual.bundle 1
 
-forwardAD ∷ (ConvertTVBandDA a a' ta da ba,
-             ConvertTVBandDA b b' tb db bb)
+forwardAD ∷ (ConvertTBandDA a a' ta da ba,
+             ConvertTBandDA b b' tb db bb)
        ⇒ (ba → bb) → a → a' → (b, b')
 
-forwardAD f x x' = TVB.unbundle $ toTVB $ f $ toDA $ TVB.bundle x x'
+forwardAD f x x' = TB.unbundle $ toTB $ f $ toDA $ TB.bundle x x'

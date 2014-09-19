@@ -58,7 +58,7 @@ instance Num a ⇒ DA (Dual a) (Dual a) (Dual (Dual a)) where
 -- just a placeholder.  The "right thing" is probably to get rid of
 -- the 2nd arg of DA, and make another type class for DA-with-tangent.
 -- Which happens to be exactly those cases where
--- (TVB a a' ta,  DA a da ba,  a'~da,  ta~ba)
+-- (TB a a' ta,  DA a da ba,  a'~da,  ta~ba)
 instance (DA a da ba, DA b db bb) ⇒ DA (a→b) (ba→db) (ba→bb) where
   bundle f df bx = bundle (f (primal bx)) (df bx) -- WARNING, INEFFICIENT!
   primal = (primal ∘)∘(∘ lift)
