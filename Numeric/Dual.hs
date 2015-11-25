@@ -76,6 +76,7 @@ instance Ord a ⇒ Ord (Dual a) where
 instance Num a ⇒ Num (Dual a) where
   (+)		= liftA2 (+) (\_ _ → (1,1))
   (*)		= liftA2 (⋅) (flip (,)) -- Can use ⋅ on RHS but must use * on LHS.
+  negate	= liftA1 negate (const (-1))
   signum (Dual x _) = lift $ signum x
   -- signum (Dual x x') = Dual (signum x) (x'⋅0)
   abs x		= x ⋅ signum x
