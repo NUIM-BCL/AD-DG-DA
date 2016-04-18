@@ -74,26 +74,26 @@ instance Ord a ⇒ Ord (Dual a) where
   compare (Dual x _) (Dual y _) = compare x y
 
 instance Num a ⇒ Num (Dual a) where
-  (+)		= liftA2 (+) (\_ _ → (1,1))
-  (*)		= liftA2 (⋅) (flip (,)) -- Can use ⋅ on RHS but must use * on LHS.
-  negate	= liftA1 negate (const (-1))
+  (+)           = liftA2 (+) (\_ _ → (1,1))
+  (*)           = liftA2 (⋅) (flip (,)) -- Can use ⋅ on RHS but must use * on LHS.
+  negate        = liftA1 negate (const (-1))
   signum (Dual x _) = lift $ signum x
   -- signum (Dual x x') = Dual (signum x) (x'⋅0)
-  abs x		= x ⋅ signum x
-  fromInteger	= lift ∘ fromInteger
+  abs x         = x ⋅ signum x
+  fromInteger   = lift ∘ fromInteger
 
 instance Fractional a ⇒ Fractional (Dual a) where
   recip = liftA1_ recip (\z _ → - z^(2∷Int))
-  fromRational	= lift ∘ fromRational
+  fromRational  = lift ∘ fromRational
 
 sqr ∷ Num a ⇒ a → a
 sqr = (^(2∷Int))
 
 instance (Eq a, Floating a) ⇒ Floating (Dual a) where
-  pi		= lift pi
-  exp		= liftA1_ exp const
-  sqrt		= liftA1_ sqrt (const ∘ recip ∘ (2⋅))
-  log		= liftA1 log recip
+  pi            = lift pi
+  exp           = liftA1_ exp const
+  sqrt          = liftA1_ sqrt (const ∘ recip ∘ (2⋅))
+  log           = liftA1 log recip
   -- The default case has a problem when the base is zero, e.g.,
   --  diffUU (**2) 0 = NaN
   -- which is wrong.
@@ -105,15 +105,15 @@ instance (Eq a, Floating a) ⇒ Floating (Dual a) where
   (**) x (Dual y0 0) = liftA1 (**y0) ((y0*) ∘ (**(y0-1))) x
   (**) x@(Dual 0 _) y = liftA2 (**) (\x0 y0 → (y0*x0**(y0-1), 0)) x y
   (**) x@(Dual _ 0) y = liftA2_ (**) (\z x0 _ → (0, z*log x0)) x y
-  (**) x y	= liftA2_ (**) (\z x0 y0 → (y0*z/x0, z*log x0)) x y
-  sin		= liftA1 sin cos
-  cos		= liftA1 cos (negate ∘ sin)
-  tan		= liftA1 tan (recip ∘ sqr ∘ cos)
-  asin		= liftA1 asin (recip ∘ sqrt ∘ (1-) ∘ sqr)
-  acos		= liftA1 acos (negate ∘ recip ∘ sqrt ∘ (1-) ∘ sqr)
-  atan		= liftA1 atan (recip ∘ (1+) ∘ sqr)
-  sinh		= liftA1 sinh cosh
-  cosh		= liftA1 cosh sinh
-  asinh		= liftA1 asinh (recip ∘ sqrt ∘ (1+) ∘ sqr)
-  acosh		= liftA1 acosh (recip ∘ sqrt ∘ (-1+) ∘ sqr)
-  atanh		= liftA1 atanh (recip ∘ (1-) ∘ sqr)
+  (**) x y      = liftA2_ (**) (\z x0 y0 → (y0*z/x0, z*log x0)) x y
+  sin           = liftA1 sin cos
+  cos           = liftA1 cos (negate ∘ sin)
+  tan           = liftA1 tan (recip ∘ sqr ∘ cos)
+  asin          = liftA1 asin (recip ∘ sqrt ∘ (1-) ∘ sqr)
+  acos          = liftA1 acos (negate ∘ recip ∘ sqrt ∘ (1-) ∘ sqr)
+  atan          = liftA1 atan (recip ∘ (1+) ∘ sqr)
+  sinh          = liftA1 sinh cosh
+  cosh          = liftA1 cosh sinh
+  asinh         = liftA1 asinh (recip ∘ sqrt ∘ (1+) ∘ sqr)
+  acosh         = liftA1 acosh (recip ∘ sqrt ∘ (-1+) ∘ sqr)
+  atanh         = liftA1 atanh (recip ∘ (1-) ∘ sqr)

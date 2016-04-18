@@ -39,20 +39,20 @@ class DA a da ba | a→ba, ba→a da where
 --   lift		= Dual.lift
 
 instance DA Double Double (Dual Double) where
-  bundle	= Dual.bundle
-  unbundle	= Dual.unbundle
-  primal	= Dual.primal
-  tangent	= Dual.tangent
-  zero		= Dual.zero
-  lift		= Dual.lift
+  bundle        = Dual.bundle
+  unbundle      = Dual.unbundle
+  primal        = Dual.primal
+  tangent       = Dual.tangent
+  zero          = Dual.zero
+  lift          = Dual.lift
 
 instance Num a ⇒ DA (Dual a) (Dual a) (Dual (Dual a)) where
-  bundle	= Dual.bundle
-  unbundle	= Dual.unbundle
-  primal	= Dual.primal
-  tangent	= Dual.tangent
-  zero		= Dual.zero
-  lift		= Dual.lift
+  bundle        = Dual.bundle
+  unbundle      = Dual.unbundle
+  primal        = Dual.primal
+  tangent       = Dual.tangent
+  zero          = Dual.zero
+  lift          = Dual.lift
 
 -- It is unclear what the 2nd arg to DA should be here.  The (ba→db) is
 -- just a placeholder.  The "right thing" is probably to get rid of
