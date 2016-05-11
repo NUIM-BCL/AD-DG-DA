@@ -38,6 +38,14 @@ class DA a da ba | a→ba, ba→a da where
 --   zero		= Dual.zero
 --   lift		= Dual.lift
 
+instance DA Float Float (Dual Float) where
+  bundle        = Dual.bundle
+  unbundle      = Dual.unbundle
+  primal        = Dual.primal
+  tangent       = Dual.tangent
+  zero          = Dual.zero
+  lift          = Dual.lift
+
 instance DA Double Double (Dual Double) where
   bundle        = Dual.bundle
   unbundle      = Dual.unbundle

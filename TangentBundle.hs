@@ -34,6 +34,14 @@ class TB a a' ta | a→ta, ta→a a' where
 --   lift		= Dual.lift
 --   zero		= Dual.zero
 
+instance TB Float Float (Dual Float) where
+  bundle        = Dual.bundle
+  unbundle      = Dual.unbundle
+  primal        = Dual.primal
+  tangent       = Dual.tangent
+  lift          = Dual.lift
+  zero          = Dual.zero
+
 instance TB Double Double (Dual Double) where
   bundle        = Dual.bundle
   unbundle      = Dual.unbundle
