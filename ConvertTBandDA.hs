@@ -27,7 +27,7 @@ class (TB a a' ta, DA a da ba) ⇒ ConvertTBandDA a a' ta da ba
    toDA  ∷ ta → ba
    toTB ∷ ba → ta
 
-instance (Num a, DA a a (Dual a), TB a a (Dual a)) ⇒ ConvertTBandDA a a (Dual a) a (Dual a)
+instance (DA a a (Dual a), TB a a (Dual a)) ⇒ ConvertTBandDA a a (Dual a) a (Dual a)
  where
   toDA  = id
   toTB = id
