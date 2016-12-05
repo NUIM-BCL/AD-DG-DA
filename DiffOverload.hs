@@ -1,6 +1,6 @@
 {-# LANGUAGE UnicodeSyntax #-}
 
-module DiffOverload (diff)
+module DiffOverload (diff, forwardAD)
 where
 
 import Prelude.Unicode
